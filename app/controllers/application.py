@@ -14,4 +14,4 @@ class Application():
 
 
     def helper(self):
-        return template('app/views/html/principal.html',)
+        return template('app/views/html/login.tpl',)

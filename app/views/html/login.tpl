@@ -1,4 +1,11 @@
-* {
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Feira Login</title>
+    <style>
+        * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
@@ -64,3 +71,20 @@ header p {
     background: #3b82f6;
     color: #fff;
 }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Bem-vindo à Feira</h1>
+            <p>Por favor, faça login ou crie uma conta.</p>
+        </header>
+
+        <div class="buttons">
+            <a href="#" class="btn">Entrar</a>
+            <a href="#" class="btn outline">Criar Conta</a>
+        </div>
+    </div>
+</body>
+</html>
