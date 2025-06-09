@@ -25,6 +25,13 @@ def helper(info= None):
 def index():
     return redirect('/helper')
 
+@app.route('/login')
+def login():
+    return ctl.render('login')
+
+@app.route('/criarconta')
+def criarconta():
+    return ctl.render('criar_conta')
 
 #-----------------------------------------------------------------------------
 
