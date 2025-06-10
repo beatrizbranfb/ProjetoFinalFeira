@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Clientes com Pedidos Pendentes - Painel Admin</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    :root {
+      --primary-color: #1e3a8a;
+      --secondary-color: #3b82f6;
+      --light-color: #d0ebff;
+      --background-color: #f8fafc;
+      --text-color: #1e293b;
+      --text-light: #64748b;
+      --white: #ffffff;
+      --success-color: #10b981;
+      --warning-color: #f59e0b;
+      --danger-color: #ef4444;
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      background-color: var(--background-color);
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      color: var(--text-color);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    header {
+      width: 100%;
+      position: fixed;
+      top: 0;
+      height: 70px;
+      background-color: var(--primary-color);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 2rem;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      z-index: 1000;
+    }
+    
+    .logo-container {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    
+    .logo {
+      height: 40px;
+      width: auto;
+      border-radius: 4px;
+    }
+    
+    .brand-name {
+      color: var(--white);
+      font-size: 1.5rem;
+      font-weight: 600;
+    }
+    
+    nav {
+      display: flex;
+      gap: 1rem;
+    }
+    
+    .nav-link {
+      color: var(--white);
+      text-decoration: none;
+      padding: 0.75rem 1.5rem;
+      font-size: 1rem;
+      font-weight: 500;
+      border-radius: 4px;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    .nav-link:hover {
+      background-color: rgba(255, 255, 255, 0.2);
+    }
+    
+    .nav-link.active {
+      background-color: var(--secondary-color);
+    }
+    
+    .nav-link i {
+      font-size: 1.2rem;
+    }
+    
+    main {
+      margin-top: 70px;
+      padding: 2rem;
+      flex: 1;
+      display: flex;
+    }
+    
+    .sidebar {
+      width: 250px;
+      background-color: var(--white);
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+      padding: 1.5rem 0;
+      margin-right: 2rem;
+      height: calc(100vh - 110px);
+      position: sticky;
+      top: 90px;
+    }
+    
+    .sidebar-menu {
+      list-style: none;
+    }
+    
+    .sidebar-item {
+      margin-bottom: 0.5rem;
+    }
+    
+    .sidebar-link {
+      display: flex;
+      align-items: center;
+      padding: 0.75rem 1.5rem;
+      color: var(--text-color);
+      text-decoration: none;
+      transition: all 0.3s ease;
+      gap: 0.75rem;
+    }
+    
+    .sidebar-link:hover {
+      background-color: var(--light-color);
+      color: var(--primary-color);
+    }
+    
+    .sidebar-link.active {
+      background-color: var(--light-color);
+      color: var(--primary-color);
+      border-left: 4px solid var(--primary-color);
+    }
+    
+    .sidebar-link i {
+      width: 20px;
+      text-align: center;
+    }
+    
+    .content {
+      flex: 1;
+      background-color: var(--white);
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+      padding: 2rem;
+    }
+    
+    .page-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid #e2e8f0;
+    }
+    
+    .page-title {
+      font-size: 1.75rem;
+      color: var(--primary-color);
+    }
+    
+    .btn {
+      padding: 0.75rem 1.5rem;
+      border-radius: 4px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      border: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    .btn-primary {
+      background-color: var(--primary-color);
+      color: var(--white);
+    }
+    
+    .btn-primary:hover {
+      background-color: #1d4ed8;
+    }
+    
+    .btn-warning {
+      background-color: var(--warning-color);
+      color: var(--white);
+    }
+    
+    .btn-warning:hover {
+      background-color: #d97706;
+    }
+    
+    .search-filter {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 1.5rem;
+      gap: 1rem;
+    }
+    
+    .search-box {
+      flex: 1;
+      position: relative;
+    }
+    
+    .search-box input {
+      width: 100%;
+      padding: 0.75rem 1rem 0.75rem 2.5rem;
+      border: 1px solid #e2e8f0;
+      border-radius: 4px;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+    }
+    
+    .search-box input:focus {
+      outline: none;
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+    }
+    
+    .search-box i {
+      position: absolute;
+      left: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-light);
+    }
+    
+    .filter-options {
+      display: flex;
+      gap: 1rem;
+    }
+    
+    .filter-select {
+      padding: 0.75rem 1rem;
+      border: 1px solid #e2e8f0;
+      border-radius: 4px;
+      font-size: 1rem;
+      background-color: var(--white);
+      color: var(--text-color);
+    }
+    
+    .table-container {
+      overflow-x: auto;
+    }
+    
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    
+    th, td {
+      padding: 1rem;
+      text-align: left;
+      border-bottom: 1px solid #e2e8f0;
+    }
+    
+    th {
+      background-color: #f1f5f9;
+      color: var(--text-light);
+      font-weight: 600;
+      text-transform: uppercase;
+      font-size: 0.75rem;
+      letter-spacing: 0.05em;
+    }
+    
+    tr:hover {
+      background-color: #f8fafc;
+    }
+    
+    .badge {
+      display: inline-block;
+      padding: 0.25rem 0.5rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+    
+    .badge-warning {
+      background-color: #fef3c7;
+      color: var(--warning-color);
+    }
+    
+    .badge-danger {
+      background-color: #fee2e2;
+      color: var(--danger-color);
+    }
+    
+    .action-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--text-light);
+      transition: all 0.3s ease;
+      padding: 0.5rem;
+      border-radius: 4px;
+    }
+    
+    .action-btn:hover {
+      color: var(--primary-color);
+      background-color: #f1f5f9;
+    }
+    
+    .status-pending {
+      color: var(--warning-color);
+      font-weight: 500;
+    }
+    
+    .status-delayed {
+      color: var(--danger-color);
+      font-weight: 500;
+    }
+    
+    .pagination {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 1.5rem;
+      padding-top: 1rem;
+      border-top: 1px solid #e2e8f0;
+    }
+    
+    .pagination-info {
+      color: var(--text-light);
+      font-size: 0.875rem;
+    }
+    
+    .pagination-controls {
+      display: flex;
+      gap: 0.5rem;
+    }
+    
+    .page-btn {
+      padding: 0.5rem 0.75rem;
+      border: 1px solid #e2e8f0;
+      border-radius: 4px;
+      background-color: var(--white);
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .page-btn:hover {
+      background-color: #f1f5f9;
+    }
+    
+    .page-btn.active {
+      background-color: var(--primary-color);
+      color: var(--white);
+      border-color: var(--primary-color);
+    }
+    
+    @media (max-width: 768px) {
+      main {
+        flex-direction: column;
+      }
+      
+      .sidebar {
+        width: 100%;
+        height: auto;
+        margin-right: 0;
+        margin-bottom: 1.5rem;
+      }
+      
+      .search-filter {
+        flex-direction: column;
+      }
+      
+      .filter-options {
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+    }
+  </style>
+</head>
+<body> 
+  <header>
+    <div class="logo-container">
+      <img class="logo" src="images/logo.jpg" alt="Logo da Feira">
+      <span class="brand-name">Painel Admin</span>
+    </div>
+    <nav>
+      <a href="#" class="nav-link"><i class="fas fa-bell"></i></a>
+      <a href="#" class="nav-link"><i class="fas fa-cog"></i></a>
+      <a href="#" class="nav-link"><i class="fas fa-user"></i> Admin</a>
+    </nav>
+  </header>
+  
+  <main>
+    <aside class="sidebar">
+      <ul class="sidebar-menu">
+        <li class="sidebar-item">
+          <a href="administrador_dashboard.html" class="sidebar-link">
+            <i class="fas fa-tachometer-alt"></i>
+            <span>Dashboard</span>
+          </a>
+        </li>
+        <li class="sidebar-item">
+          <a href="#" class="sidebar-link active">
+            <i class="fas fa-users"></i>
+            <span>Clientes</span>
+          </a>
+        </li>
+        <li class="sidebar-item">
+          <a href="#" class="sidebar-link">
+            <i class="fas fa-boxes"></i>
+            <span>Estoque</span>
+          </a>
+        </li>
+        <li class="sidebar-item">
+          <a href="#" class="sidebar-link">
+            <i class="fas fa-shopping-basket"></i>
+            <span>Produtos</span>
+          </a>
+        </li>
+        <li class="sidebar-item">
+          <a href="#" class="sidebar-link">
+            <i class="fas fa-file-invoice-dollar"></i>
+            <span>Vendas</span>
+          </a>
+        </li>
+        <li class="sidebar-item">
+          <a href="#" class="sidebar-link">
+            <i class="fas fa-chart-line"></i>
+            <span>Relatórios</span>
+          </a>
+        </li>
+        <li class="sidebar-item">
+          <a href="#" class="sidebar-link">
+            <i class="fas fa-cog"></i>
+            <span>Configurações</span>
+          </a>
+        </li>
+      </ul>
+    </aside>
+    
+    <div class="content">
+      <div class="page-header">
+        <h1 class="page-title">Clientes com Pedidos Pendentes</h1>
+        <button class="btn btn-warning">
+          <i class="fas fa-file-export"></i>
+          <span>Exportar Lista</span>
+        </button>
+      </div>
+      
+      <div class="search-filter">
+        <div class="search-box">
+          <i class="fas fa-search"></i>
+          <input type="text" placeholder="Pesquisar clientes...">
+        </div>
+        <div class="filter-options">
+          <select class="filter-select">
+            <option>Todos os status</option>
+            <option>Pendente</option>
+            <option>Atrasado</option>
+            <option>Processando</option>
+          </select>
+          <select class="filter-select">
+            <option>Ordenar por</option>
+            <option>Data do pedido</option>
+            <option>Nome do cliente</option>
+            <option>Valor do pedido</option>
+          </select>
+        </div>
+      </div>
+      
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Cliente</th>
+              <th>Pedido</th>
+              <th>Data</th>
+              <th>Valor</th>
+              <th>Status</th>
+              <th>Dias Pendentes</th>
+              <th>Ações</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>
+                <strong>Ciclano</strong><br>
+                <small>ciclano@gmail.com</small><br>
+                <small>(61) 99999-9999</small><br>
+                <small>endereço qualquer</small>
+              </td>
+              <td>#2548</td>
+              <td>10/06/2025</td>
+              <td>R$ 245,90</td>
+              <td><span class="status-pending">Pendente</span></td>
+              <td>2 dias</td>
+              <td>
+                <button class="action-btn" title="Detalhes"><i class="fas fa-eye"></i></button>
+                <button class="action-btn" title="Marcar como entregue"><i class="fas fa-check-circle"></i></button>
+                <button class="action-btn" title="Contatar cliente"><i class="fas fa-phone-alt"></i></button>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <strong>Beatriz Brandão</strong><br>
+                <small>beatrizb@gmail.com</small><br>
+                <small>(61) 98888-8888</small><br>
+                <small>casa 123 rua 321</small>
+              </td>
+              <td>#2547</td>
+              <td>09/06/2025</td>
+              <td>R$ 189,50</td>
+              <td><span class="status-delayed">Atrasado</span></td>
+              <td>5 dias</td>
+              <td>
+                <button class="action-btn" title="Detalhes"><i class="fas fa-eye"></i></button>
+                <button class="action-btn" title="Marcar como entregue"><i class="fas fa-check-circle"></i></button>
+                <button class="action-btn" title="Contatar cliente"><i class="fas fa-phone-alt"></i></button>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <strong>Renan</strong><br>
+                <small>renan@gmail.com</small><br>
+                <small>(61) 97777-7777</small><br>
+                <small>endereço aqui</small>
+              </td>
+              <td>#2546</td>
+              <td>09/06/2025</td>
+              <td>R$ 320,00</td>
+              <td><span class="status-pending">Pendente</span></td>
+              <td>3 dias</td>
+              <td>
+                <button class="action-btn" title="Detalhes"><i class="fas fa-eye"></i></button>
+                <button class="action-btn" title="Marcar como entregue"><i class="fas fa-check-circle"></i></button>
+                <button class="action-btn" title="Contatar cliente"><i class="fas fa-phone-alt"></i></button>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <strong>Felipe Nunes</strong><br>
+                <small>felipe@gmail.com</small><br>
+                <small>(61) 96666-6666</small><br>
+                <small>endereço aqui</small>
+              </td>
+              <td>#2545</td>
+              <td>08/06/2025</td>
+              <td>R$ 156,75</td>
+              <td><span class="status-delayed">Atrasado</span></td>
+              <td>7 dias</td>
+              <td>
+                <button class="action-btn" title="Detalhes"><i class="fas fa-eye"></i></button>
+                <button class="action-btn" title="Marcar como entregue"><i class="fas fa-check-circle"></i></button>
+                <button class="action-btn" title="Contatar cliente"><i class="fas fa-phone-alt"></i></button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      
+      <div class="pagination">
+        <div class="pagination-info">
+          Mostrando 1 a 5 de 23 registros
+        </div>
+        <div class="pagination-controls">
+          <button class="page-btn"><i class="fas fa-chevron-left"></i></button>
+          <button class="page-btn active">1</button>
+          <button class="page-btn">2</button>
+          <button class="page-btn">3</button>
+          <button class="page-btn">4</button>
+          <button class="page-btn"><i class="fas fa-chevron-right"></i></button>
+        </div>
+      </div>
+    </div>
+  </main>
+</body>
+</html>
