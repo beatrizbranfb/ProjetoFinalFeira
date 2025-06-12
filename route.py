@@ -46,7 +46,6 @@ def init_db():
     try:
         conn = sqlite3.connect(DATABASE)
         cursor = conn.cursor()
-
         cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='users';")
         if not cursor.fetchone():
             with open(schema_path, 'r') as f:
@@ -55,9 +54,6 @@ def init_db():
         conn.close()
     except FileNotFoundError:
         raise
-    except sqlite3.OperationalError as e:
-        raise
-
 
 init_db()
 
