@@ -1,17 +1,12 @@
-from bottle import template
+from bottle import template, request
 
-
-class Application():
-
+class Application:
     def __init__(self):
-        self.pages = {
-        }
+        pass
 
+    def render_page(self, template_name, **kwargs):
+        kwargs['user_id'] = request.session.get('user_id')
+        kwargs['user_role'] = request.session.get('role')
+        return template(template_name, **kwargs)
 
-    def render(self,page):
-       content = self.pages.get(page, self.helper)
-       return content()
-
-
-    def helper(self):
-        return template('app/views/login.tpl',)
+app_renderer = Application()

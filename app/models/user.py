@@ -2,11 +2,11 @@ from app.controllers.db import database
 
 
 class User:
-    def __init__(self, user_id, name, email, password, role='default'):
+    def __init__(self, user_id, username, password, email, role='default'):
         self.id = user_id
-        self.name = name
-        self.email = email
+        self.username = username
         self.password = password
+        self.email = email
         self.role = role
 
     @staticmethod

@@ -1,7 +1,9 @@
-from bottle import route, request, template, redirect
-from models.order import Order, OrderItem
-from models.product import Product
-from controllers.auth_controller import login_required, get_user_role
+from bottle import route, request, redirect
+from app.models.order import Order, OrderItem
+from app.models.product import Product
+from app.controllers.auth_controller import login_required, get_user_role
+from app.controllers.application import app_renderer
+
 
 @route('/cart')
 @login_required
@@ -10,7 +12,7 @@ def view_cart():
     cart = Order.get_user_pending_order(user_id)
     if not cart:
         cart = Order.create(user_id)
-    return template('cart/view_cart', cart=cart)
+    return app_renderer.render_page('carrinho listagem', cart=cart)
 
 @route('/cart/add/<product_id:int>', method=['POST'])
 @login_required
@@ -26,7 +28,7 @@ def add_to_cart(product_id):
         cart.add_item(product_id, quantity)
         redirect('/cart')
     except ValueError as e:
-        return template('products/product_details', product=Product.find_by_id(product_id), error=str(e))
+        return app_renderer.render_page('produtos/detalhes.tpl', product=Product.find_by_id(product_id), error=str(e))
 
 
 @route('/cart/remove/<product_id:int>', method=['POST'])
@@ -42,7 +44,13 @@ def remove_from_cart(product_id):
 @login_required
 def update_cart_item(product_id):
     user_id = request.session.get('user_id')
-    new_quantity = int(request.forms.get('quantity', 0))
+    try:
+        new_quantity = int(request.forms.get('quantity', 0))
+        if new_quantity < 0:
+            raise ValueError("Quantidade não pode ser negativa.")
+    except (ValueError, TypeError):
+        cart = Order.get_user_pending_order(user_id)
+        return app_renderer.render_page('carrinho listagem.tpl', cart=cart, error="Quantidade inválida.")
 
     cart = Order.get_user_pending_order(user_id)
     if cart:
@@ -50,7 +58,7 @@ def update_cart_item(product_id):
             cart.update_item_quantity(product_id, new_quantity)
             redirect('/cart')
         except ValueError as e:
-            return template('cart/view_cart', cart=cart, error=str(e))
+            return app_renderer.render_page('carrinho listagem.tpl', cart=cart, error=str(e))
     return redirect('/cart')
 
 @route('/cart/checkout', method=['POST'])
@@ -60,10 +68,10 @@ def checkout():
     cart = Order.get_user_pending_order(user_id)
 
     if not cart or not cart.items:
-        return template('cart/view_cart', cart=cart, error="Seu carrinho está vazio.")
+        return app_renderer.render_page('carrinho listagem', cart=cart, error="Seu carrinho está vazio.")
 
     try:
         cart.complete_order()
-        return template('cart/checkout_success', order=cart)
+        return app_renderer.render_page('carrinho completo', order=cart)
     except ValueError as e:
-        return template('cart/view_cart', cart=cart, error=str(e))
+        return app_renderer.render_page('carrinho listagem', cart=cart, error=str(e))
