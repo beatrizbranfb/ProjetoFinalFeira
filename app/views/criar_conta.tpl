@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Login - Feira</title>
+  <title>Criar Conta - Feira</title>
   <style>
     body {
       background: linear-gradient(135deg, #d0ebff, #f0faff);
@@ -14,7 +14,7 @@
       height: 100vh;
     }
 
-    .login-container {
+    .signup-container {
       background-color: #ffffffcc;
       padding: 40px;
       border-radius: 20px;
@@ -62,14 +62,16 @@
   </style>
 </head>
 <body>
-  <div class="login-container">
-    <h2>Entrar na Feira</h2>
+  <div class="signup-container">
+    <h2>Criar Conta na Feira</h2>
     <form>
+      <input type="text" placeholder="Nome completo" required />
       <input type="email" placeholder="E-mail" required />
       <input type="password" placeholder="Senha" required />
-      <button type="submit" class="btn">Entrar</button>
+      <input type="password" placeholder="Confirmar senha" required />
+      <button type="submit" class="btn">Cadastrar</button>
     </form>
-    <a href="/criarconta">Criar uma nova conta</a>
+    <a href="/login">Já tem uma conta? Entrar</a>
   </div>
 </body>
 </html>
