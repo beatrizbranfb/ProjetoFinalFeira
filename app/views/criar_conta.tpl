@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Criar Conta - Feira</title>
-  <link rel="stylesheet" type="text/css" href="/app/static/css/criar_conta.css">
+  <link rel="stylesheet" type="text/css" href="../static/css/criar_conta.css">
 </head>
 <body>
   <div class="signup-container">
