@@ -10,7 +10,7 @@
 <body> 
   <header>
     <div class="logo-container">
-      <img class="logo" src="/ProjetoFinalFeira/app/static/images/logo.jpg" alt="Logo da Feira">
+      <img class="logo" src="../static/images/logo.jpg" alt="Logo da Feira">
       <span class="brand-name">Administrador</span>
     </div>
     <nav>
@@ -38,18 +38,6 @@
           <a href="administrador_estoque.html" class="sidebar-link active">
             <i class="fas fa-boxes"></i>
             <span>Estoque</span>
-          </a>
-        </li>
-        <li class="sidebar-item">
-          <a href="#" class="sidebar-link">
-            <i class="fas fa-file-invoice-dollar"></i>
-            <span>Vendas</span>
-          </a>
-        </li>
-        <li class="sidebar-item">
-          <a href="#" class="sidebar-link">
-            <i class="fas fa-chart-line"></i>
-            <span>Relatórios</span>
           </a>
         </li>
       </ul>
@@ -203,8 +191,7 @@
       </div>
     </div>
   </main>
-  
-  <!-- Modal Adicionar Produto -->
+
   <div class="modal" id="addProductModal">
     <div class="modal-content">
       <div class="modal-header">
@@ -245,34 +232,5 @@
       </form>
     </div>
   </div>
-  
-  <script>
-    const addProductBtn = document.getElementById('addProductBtn');
-    const addProductModal = document.getElementById('addProductModal');
-    const closeModalBtns = document.querySelectorAll('.close-modal');
-    
-    addProductBtn.addEventListener('click', () => {
-      addProductModal.style.display = 'flex';
-    });
-    
-    closeModalBtns.forEach(btn => {
-      btn.addEventListener('click', () => {
-        addProductModal.style.display = 'none';
-      });
-    });
-    
-    // Close modal when clicking outside
-    window.addEventListener('click', (e) => {
-      if (e.target === addProductModal) {
-        addProductModal.style.display = 'none';
-      }
-    });
-    document.getElementById('addProductForm').addEventListener('submit', (e) => {
-      e.preventDefault();
-      alert('Fruta adicionada com sucesso!');
-      addProductModal.style.display = 'none';
-      e.target.reset();
-    });
-  </script>
 </body>
 </html>

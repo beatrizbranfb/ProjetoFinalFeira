@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Minha Conta - Feira Online</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link rel="stylesheet" type="text/css" href="../static/css/cliente_style.css">
+</head>
+<body> 
+  <header>
+    <div class="logo-container">
+      <img class="logo" src="../static/images/logo.jpg" alt="Logo da Feira">
+      <span class="brand-name">Feira Online</span>
+    </div>
+    <nav>
+      <a href="#" class="nav-link">
+        <i class="fas fa-shopping-cart"></i>
+        <span>Carrinho</span>
+        <span class="cart-count">0</span>
+      </a>
+      <a href="#" class="nav-link">
+        <i class="fas fa-user"></i>
+        <span>Minha Conta</span>
+      </a>
+    </nav>
+  </header>
+  <main>
+    <aside class="sidebar">
+      <ul class="sidebar-menu">
+        <li class="sidebar-item">
+          <a href="#" class="sidebar-link active">
+            <i class="fas fa-store"></i>
+            <span>Produtos</span>
+          </a>
+        </li>
+        <li class="sidebar-item">
+          <a href="#" class="sidebar-link">
+            <i class="fas fa-shopping-cart"></i>
+            <span>Meu Carrinho</span>
+          </a>
+        </li>
+        <li class="sidebar-item">
+          <a href="#" class="sidebar-link">
+            <i class="fas fa-clipboard-list"></i>
+            <span>Meus Pedidos</span>
+          </a>
+        </li>
+      </ul>
+    </aside>
+    
+    <div class="content">
+      <div class="tab-content active">
+        <div class="page-header">
+          <h1 class="page-title">Nossos Produtos</h1>
+          <div class="filter-options">
+            <select class="filter-select">
+              <option value="all">Todas as categorias</option>
+              <option value="fruits">Frutas</option>
+              <option value="vegetables">Legumes</option>
+              <option value="greens">Verduras</option>
+            </select>
+          </div>
+        </div>
+        
+        <div class="search-filter">
+          <div class="search-box">
+            <i class="fas fa-search"></i>
+            <input type="text" placeholder="Pesquisar produtos...">
+          </div>
+          <div class="filter-options">
+            <select class="filter-select" >
+              <option value="name-asc">Nome (A-Z)</option>
+              <option value="name-desc">Nome (Z-A)</option>
+              <option value="price-asc">Preço (menor)</option>
+              <option value="price-desc">Preço (maior)</option>
+            </select>
+          </div>
+        </div>
+        
+        <div class="products-grid">
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+ 
