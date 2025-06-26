@@ -3,7 +3,7 @@ import json
 from datetime import datetime
 
 
-class CartRecord():
+class CartRecord:
 
     def __init__(self):
         self.__all_orders = []
@@ -31,13 +31,6 @@ class CartRecord():
         self.__all_orders.append(new_order)
         self.__write()
         return new_order
-    
-    def add_items(self):
-        OrderItemRecord = CartItemRecord()
-        for order in self.__all_orders:
-            for item in order.items:
-                OrderItemRecord(order.id, item.product_id, item.quantity)
-
     
     def get_tot_amount(self, order_id):
         order = self.get_order_by_id(order_id)
@@ -75,7 +68,7 @@ class CartRecord():
             return order
         return None
 
-class CartItemRecord():
+class CartItemRecord:
 
     def __init__(self):
         self.__all_items = []
@@ -111,6 +104,23 @@ class CartItemRecord():
             self.__write()
             return item
         return None
+    
+    def update_item_quantity(self, order_id, product_id, new_quantity):
+        item = self.get_cart_item(order_id, product_id)
+        if item:
+            if new_quantity <= 0:
+                self.del_item(item.id)
+            else:
+                item.quantity = new_quantity
+                self.__write()
+            return item
+        raise ValueError("Item não encontrado no carrinho.")
 
     def get_all_items(self):
         return self.__all_items
+    
+    def get_cart_item(self, order_id, product_id):
+        for item in self.__all_items:
+            if item.order_id == order_id and item.product_id == product_id:
+                return item
+        return None

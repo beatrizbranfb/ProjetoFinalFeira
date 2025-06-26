@@ -1,12 +1,8 @@
 from bottle import Bottle, run, TEMPLATE_PATH, request, response
-from bottle_sqlite import SQLitePlugin
 import os
-import sqlite3
 import uuid
 
-from config import DATABASE, SECRET_KEY
-
-from app.controllers.routes_setup import setup_routes
+from app.controllers.routes_setup import RouteRenderer
 import sys
 
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), 'app'))
@@ -16,7 +12,7 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 TEMPLATE_PATH.append(os.path.join(APP_ROOT_DIR, 'views'))
 
 app = Bottle()
-app.install(SQLitePlugin(dbfile=os.path.join(APP_ROOT_DIR, DATABASE)))
+route_render = RouteRenderer()
 
 sessions = {}
 
@@ -37,27 +33,7 @@ def teardown_session():
     if session_id:
         sessions[session_id] = request.session
 
-def init_db():
-
-    db_folder_path = os.path.join(APP_ROOT_DIR, 'controllers', 'db')
-    os.makedirs(db_folder_path, exist_ok=True)
-    schema_path = os.path.join(db_folder_path, 'schema.sql')
-
-    try:
-        conn = sqlite3.connect(DATABASE)
-        cursor = conn.cursor()
-        cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='users';")
-        if not cursor.fetchone():
-            with open(schema_path, 'r') as f:
-                conn.executescript(f.read())
-            conn.commit()
-        conn.close()
-    except FileNotFoundError:
-        raise
-
-init_db()
-
-setup_routes(app, APP_ROOT_DIR)
+route_render.setup_routes(app, APP_ROOT_DIR)
 
 if __name__ == '__main__':
     run(app, host='localhost', port=8080, debug=True)

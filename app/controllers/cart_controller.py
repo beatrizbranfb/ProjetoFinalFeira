@@ -1,77 +1,89 @@
 from bottle import route, request, redirect
 from app.controllers.cartRecord import CartRecord, CartItemRecord
 from app.controllers.productRecord import ProductRecord
-from app.controllers.user_controller import login_required, get_user_role
+from app.controllers.user_controller import login_required
 from app.controllers.application import app_renderer
 
 
-@route('/cart')
-@login_required
-def view_cart():
-    user_id = request.session.get('user_id')
-    cart = CartRecord.get_user_orders(user_id)
-    if not cart:
-        cart = CartRecord.add_order(user_id)
-    return app_renderer.render_page('carrinho listagem', cart=cart)
+class CartController:
+    def __init__(self):
+        self.__cart_record = CartRecord()
+        self.__cart_item_record = CartItemRecord()
+        self.pages = {
+            'view_cart': self.view_cart,
+            'add_to_cart': self.add_to_cart,
+            'remove_from_cart': self.remove_from_cart,
+            'update_cart_item': self.update_cart_item,
+            'checkout': self.checkout
+        }
 
-@route('/cart/add/<product_id:int>', method=['POST'])
-@login_required
-def add_to_cart(product_id):
-    user_id = request.session.get('user_id')
-    quantity = int(request.forms.get('quantity', 1))
+    @route('/cart')
+    @login_required
+    def view_cart(self):
+        user_id = request.session.get('user_id')
+        cart = self.__cart_record.get_user_orders(user_id)
+        if not cart:
+            cart = self.__cart_record.add_order(user_id)
+        return app_renderer.render_page('carrinho listagem', cart=cart)
 
-    cart = CartRecord.get_user_orders(user_id)
-    if not cart:
-        cart = CartRecord.add_order(user_id)
+    @route('/cart/add/<product_id:int>', method=['POST'])
+    @login_required
+    def add_to_cart(self, product_id):
+        user_id = request.session.get('user_id')
+        quantity = int(request.forms.get('quantity', 1))
 
-    try:
-        cart.add_item(product_id, quantity)
-        redirect('/cart')
-    except ValueError as e:
-        return app_renderer.render_page('produtos/detalhes.tpl', product=ProductRecord.get_product_by_id(product_id), error=str(e))
+        cart = self.__cart_record.get_user_orders(user_id)
+        if not cart:
+            cart = self.__cart_record.add_order(user_id)
 
-
-@route('/cart/remove/<product_id:int>', method=['POST'])
-@login_required
-def remove_from_cart(product_id):
-    user_id = request.session.get('user_id')
-    cart = CartRecord.get_user_orders(user_id)
-    if cart:
-        cart.remove_item(product_id)
-    redirect('/cart')
-
-@route('/cart/update/<product_id:int>', method=['POST'])
-@login_required
-def update_cart_item(product_id):
-    user_id = request.session.get('user_id')
-    try:
-        new_quantity = int(request.forms.get('quantity', 0))
-        if new_quantity < 0:
-            raise ValueError("Quantidade não pode ser negativa.")
-    except (ValueError, TypeError):
-        cart = CartRecord.get_user_orders(user_id)
-        return app_renderer.render_page('carrinho listagem.tpl', cart=cart, error="Quantidade inválida.")
-
-    cart = CartRecord.get_user_orders(user_id)
-    if cart:
         try:
-            cart.update_item_quantity(product_id, new_quantity)
+            if quantity <= 0:
+                raise ValueError("Quantidade deve ser maior que zero.")
+            self.__cart_item_record.add_item(cart.id, product_id, quantity)
             redirect('/cart')
         except ValueError as e:
-            return app_renderer.render_page('carrinho listagem.tpl', cart=cart, error=str(e))
-    return redirect('/cart')
+            return app_renderer.render_page('produtos/detalhes.tpl', product=ProductRecord.get_product_by_id(product_id), error=str(e))
 
-@route('/cart/checkout', method=['POST'])
-@login_required
-def checkout():
-    user_id = request.session.get('user_id')
-    cart = CartRecord.get_user_orders(user_id)
 
-    if not cart or not cart.items:
-        return app_renderer.render_page('carrinho listagem', cart=cart, error="Seu carrinho está vazio.")
+    @route('/cart/remove/<product_id:int>', method=['POST'])
+    @login_required
+    def remove_from_cart(self, product_id):
+        user_id = request.session.get('user_id')
+        cart = self.__cart_record.get_user_orders(user_id)
+        if cart:
+            self.__cart_item_record.del_item(cart.id, product_id)
+        redirect('/cart')
 
-    try:
-        cart.complete_order()
-        return app_renderer.render_page('carrinho completo', order=cart)
-    except ValueError as e:
-        return app_renderer.render_page('carrinho listagem', cart=cart, error=str(e))
+    @route('/cart/update/<product_id:int>', method=['POST'])
+    @login_required
+    def update_cart_item(self, product_id):
+        user_id = request.session.get('user_id')
+        try:
+            new_quantity = int(request.forms.get('quantity', 0))
+        except (ValueError, TypeError):
+            cart = self.__cart_record.get_user_orders(user_id)
+            return app_renderer.render_page('carrinho listagem.tpl', cart=cart, error="Quantidade inválida.")
+
+        cart_item = self.__cart_item_record.get_cart_item(cart.id, product_id)
+        if cart_item:
+            try:
+                cart_item.update_item_quantity(cart.id, product_id, new_quantity)
+                redirect('/cart')
+            except ValueError as e:
+                return app_renderer.render_page('carrinho listagem.tpl', cart=cart, error=str(e))
+        return redirect('/cart')
+
+    @route('/cart/checkout', method=['POST'])
+    @login_required
+    def checkout(self):
+        user_id = request.session.get('user_id')
+        cart = self.__cart_record.get_user_orders(user_id)
+
+        if not cart or not cart.items:
+            return app_renderer.render_page('carrinho listagem', cart=cart, error="Seu carrinho está vazio.")
+
+        try:
+            cart.update_order_status()
+            return app_renderer.render_page('carrinho completo', order=cart)
+        except ValueError as e:
+            return app_renderer.render_page('carrinho listagem', cart=cart, error=str(e))

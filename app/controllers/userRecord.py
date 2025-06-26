@@ -71,6 +71,13 @@ class UserRecord():
             return self.__authenticated_users[session_id]
         else:
             return None
+        
+    def getUserByUsername(self, username):
+        for account_type in ['user_accounts', 'admin_accounts']:
+            for user in self.__all_users[account_type]:
+                if user.username == username:
+                    return user
+        return None
 
     def getAutenticatedUsers(self):
         return self.__authenticated_users
@@ -89,3 +96,7 @@ class UserRecord():
     def logout(self, session_id):
         if session_id in self.__authenticated_users:
             del self.__authenticated_users[session_id]
+
+    def update_users_list(self):
+        self.read('user_accounts')
+        self.read('admin_accounts')

@@ -39,3 +39,20 @@ class ProductRecord():
             if product.id == product_id:
                 return product
         return None
+    
+    def update_product(self, product_id, name=None, price=None, stock=None, description=None):
+        product = self.get_product_by_id(product_id)
+        if not product:
+            return None
+        
+        if name is not None:
+            product.name = name
+        if price is not None:
+            product.price = price
+        if stock is not None:
+            product.stock = stock
+        if description is not None:
+            product.description = description
+        
+        self.__write()
+        return product
