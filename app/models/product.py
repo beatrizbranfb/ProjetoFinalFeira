@@ -2,17 +2,17 @@ from app.controllers.db import database
 
 
 class Product:
-    def __init__(self, product_id, name, description, price, stock):
+    def __init__(self, product_id, name, price, stock, description):
         self.id = product_id
         self.name = name
-        self.description = description
         self.price = price
         self.stock = stock
+        self.description = description
 
     @staticmethod
     def get_db():
         return database.get_db()
-    
+
     @classmethod
     def get_all(cls):
         with cls.get_db() as db:
@@ -40,7 +40,7 @@ class Product:
                     product_data['stock']
                 )
             return None
-        
+
     @classmethod
     def create(self):
         with self.get_db() as db:

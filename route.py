@@ -39,8 +39,8 @@ def teardown_session():
 
 def init_db():
 
-    os.makedirs(db_folder_path, exist_ok=True)
     db_folder_path = os.path.join(APP_ROOT_DIR, 'controllers', 'db')
+    os.makedirs(db_folder_path, exist_ok=True)
     schema_path = os.path.join(db_folder_path, 'schema.sql')
 
     try:
