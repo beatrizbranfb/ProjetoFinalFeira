@@ -7,12 +7,6 @@ from app.controllers.cart_controller import CartController
 
 class RouteRenderer:
 
-    def render(self, page, parameter=None):
-            content = self.pages.get(page, self.portal)
-            if not parameter:
-                return content()
-            return content(parameter)
-
     def setup_routes(app, base_dir):
 
         @app.route('/static/<filepath:path>')
