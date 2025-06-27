@@ -67,22 +67,23 @@ class UserController:
         request.session.clear()
         redirect('/login')
 
+ctl = UserController()
 
-    # Decorador para rotas que precisem de login
-    def login_required(self, func):
-        def wrapper(*args, **kwargs):
-            if not self.is_logged_in():
-                redirect('/login')
+# Decorador para rotas que precisem de login
+def login_required(func):
+    def wrapper(*args, **kwargs):
+        if not ctl.is_logged_in():
+            redirect('/login')
+        return func(*args, **kwargs)
+    return wrapper
+
+# Decorador para rotas que precisem de um usuário administrador
+def admin_required(func):
+    def wrapper(*args, **kwargs):
+        if ctl.get_user_role() == 'admin':
             return func(*args, **kwargs)
-        return wrapper
-
-    # Decorador para rotas que precisem de um usuário administrador
-    def admin_required(self, func):
-        def wrapper(*args, **kwargs):
-            if self.get_user_role() == 'admin':
-                return func(*args, **kwargs)
-            else:
-                print("Acesso negado: usuário não é um administrador.")
-                redirect('/login')
-                return None
-        return wrapper
+        else:
+            print("Acesso negado: usuário não é um administrador.")
+            redirect('/login')
+            return None
+    return wrapper

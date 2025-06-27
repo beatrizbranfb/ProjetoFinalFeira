@@ -33,7 +33,7 @@ def teardown_session():
     if session_id:
         sessions[session_id] = request.session
 
-route_render.setup_routes(app, APP_ROOT_DIR)
+route_render.setup_routes(app)
 
 if __name__ == '__main__':
     run(app, host='localhost', port=8080, debug=True)

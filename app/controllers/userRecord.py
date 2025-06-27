@@ -17,7 +17,10 @@ class UserRecord():
                 user_data = json.load(fjson)
                 self.__all_users[database] = [account_class(**user) for user in user_data]
         except FileNotFoundError:
-            self.__all_users[database].append(account_class(0, 'GuestUser', '000000', 'abc@gmail.com'))
+            if database == 'user_accounts':
+                self.__all_users[database].append(account_class(0,'GuestUser', '000000', 'a@gmail.com'))
+            else:
+                self.__all_users[database].append(account_class(0,'AdminUser', '000000', 'admin@gmail.com', permissions=['admin']))
 
     def __write(self, database):
         try:
