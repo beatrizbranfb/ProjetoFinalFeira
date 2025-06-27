@@ -9,10 +9,10 @@
 <body>
   <div class="signup-container">
     <h2>Criar Conta na Feira</h2>
-    <form>
-      <input type="text" placeholder="Nome completo" required />
-      <input type="email" placeholder="E-mail" required />
-      <input type="password" placeholder="Senha" required />
+    <form method="post" action="/criar_conta">
+      <input type="text" name="username" placeholder="Nome completo" required />
+      <input type="email" name="email" placeholder="E-mail" required />
+      <input type="password" name="password" placeholder="Senha" required />
       <input type="password" placeholder="Confirmar senha" required />
       <button type="submit" class="btn" id="submitButton">Cadastrar</button>
     </form>
