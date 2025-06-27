@@ -1,28 +1,35 @@
-from bottle import template
+from bottle import template, request
 
 
-class Application():
+class Application:
+
+    def render_page(self, template_name, **kwargs):
+        kwargs['user_id'] = request.session.get('user_id')
+        kwargs['is_admin'] = request.session.get('is_admin', False)
+        return template(template_name, **kwargs)
 
     def __init__(self):
         self.pages = {
-            'login': self.login,
-            'criar_conta': self.criar_conta,
-            'helper': self.helper
         }
-
 
     def render(self,page):
        content = self.pages.get(page, self.helper)
        return content()
 
-
     def helper(self):
-        return template('app/views/index.html',)
+        return template('app/views/index.html')
     
     def login(self):
-        return template('app/views/login.tpl',)
-    
-    def criar_conta(self):
-        return template('app/views/criar_conta.tpl',)
-    
+        return template('app/views/login.html')
 
+    def register(self):
+        return template('app/views/criar_conta.html')
+
+    def cart(self):
+        return template('app/views/cliente_carrinho.html')
+    
+    def products(self):
+        return template('app/views/cliente_produto.html')
+
+
+app_renderer = Application()

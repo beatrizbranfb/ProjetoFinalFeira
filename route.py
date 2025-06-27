@@ -1,41 +1,75 @@
+from bottle import Bottle, run, TEMPLATE_PATH, request, response, static_file, route, template, redirect
+import os
+import uuid
+import sys
 from app.controllers.application import Application
-from bottle import Bottle, route, run, request, static_file
-from bottle import redirect, template, response
+from app.controllers.user_controller import UserController
+from app.controllers.product_controller import ProductController
+from app.controllers.cart_controller import CartController
 
+
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), 'app'))
+
+APP_ROOT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'app')
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+TEMPLATE_PATH.append(os.path.join(APP_ROOT_DIR, 'views'))
 
 app = Bottle()
 ctl = Application()
+user_ctl = UserController()
 
+sessions = {}
 
-#-----------------------------------------------------------------------------
-# Rotas:
+@app.hook('before_request')
+def setup_session():
+    session_id = request.get_cookie("session_id")
+    if session_id and session_id in sessions:
+        request.session = sessions[session_id]
+    else:
+        session_id = str(uuid.uuid4())
+        request.session = {}
+        sessions[session_id] = request.session
+        response.set_cookie("session_id", session_id, path='/', httponly=True)
 
+@app.hook('after_request')
+def teardown_session():
+    session_id = request.get_cookie("session_id")
+    if session_id:
+        sessions[session_id] = request.session
+
+#---------------------------------------------------------------------------------------
+#Rotas
 @app.route('/static/<filepath:path>')
 def serve_static(filepath):
     return static_file(filepath, root='./app/static')
-
+        
 @app.route('/helper')
-def helper(info= None):
+def helper(info=None):
     return ctl.render('helper')
 
+#--------------------------------------------------------------------------------------
 
-#-----------------------------------------------------------------------------
-# Suas rotas aqui:
-@app.route('/')
-def index():
-    return redirect('/helper')
+app.route('/', callback=ctl.helper) # This line was already correct
+app.route('/login', callback=ctl.login)
+app.route('/login', method='POST', callback=user_ctl.login)
+app.route('/register', callback=ctl.register)
+app.route('/register', method='POST', callback=user_ctl.register)
+app.route('/logout', callback=user_ctl.logout)
 
-@app.route('/login')
-def login():
-    return ctl.render('login')
+app.route('/products/<product_id:int>', callback=ProductController.product_details)
+app.route('/products/add', callback=ProductController.add_product)
+app.route('/products/add', method='POST', callback=ProductController.add_product)
+app.route('/products/edit/<product_id:int>', callback=ProductController.edit_product)
+app.route('/products/edit/<product_id:int>', method='POST', callback=ProductController.edit_product)
+app.route('/products/delete/<product_id:int>', method='POST', callback=ProductController.delete_product)
+app.route('/products', callback=ProductController.list_products)
 
-@app.route('/criarconta')
-def criarconta():
-    return ctl.render('criar_conta')
-
-#-----------------------------------------------------------------------------
+app.route('/cart', callback=CartController.view_cart)
+app.route('/cart/add/<product_id:int>', method='POST', callback=CartController.add_to_cart)
+app.route('/cart/remove/<product_id:int>', method='POST', callback=CartController.remove_from_cart)
+app.route('/cart/update/<product_id:int>', method='POST', callback=CartController.update_cart_item)
+app.route('/cart/checkout', method='POST', callback=CartController.checkout)
 
 
 if __name__ == '__main__':
-
     run(app, host='localhost', port=8080, debug=True)
