@@ -1,6 +1,6 @@
 class User:
-    def __init__(self, user_id, username, password, email):
-        self.id = user_id
+    def __init__(self, id, username, password, email):
+        self.id = id
         self.username = username
         self.password = password
         self.email = email
@@ -18,3 +18,6 @@ class AdminUser(User):
 
     def is_admin(self):
         return True
+    
+    def __str__(self): 
+        return f"User(id={self.id}, username='{self.username}', email='{self.email}', is_admin={self.is_admin()})"
