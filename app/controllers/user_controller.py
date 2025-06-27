@@ -50,8 +50,11 @@ class UserController:
         if request.method == 'POST':
             username = request.forms.get('username')
             password = request.forms.get('password')
+            confirm_password = request.forms.get('confirm_password')
             email = request.forms.get('email')
 
+            if password != confirm_password:
+                return app_renderer.render_page('/register', error="As senhas não correspondem.")
             if self.__users.getUserByUsername(username):
                 return app_renderer.render_page('/register', error="Nome de usuário já existe.")
             if not username or not password or not email:
