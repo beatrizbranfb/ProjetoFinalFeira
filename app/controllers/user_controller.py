@@ -34,11 +34,10 @@ class UserController:
             email = request.forms.get('email')
             password = request.forms.get('password')
 
-            user = self.__users.getUserByUsername(email)
+            user = self.__users.getUserByEmail(email)
             if user:
                 if user.password == password:
                     request.session['user'] = user.id
-                    request.session['role'] = user.role
                     redirect('/products')
                 else:
                     return app_renderer.render_page('login', error='Usuário ou senha inválidos.')
