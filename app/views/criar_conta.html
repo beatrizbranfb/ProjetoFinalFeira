@@ -9,11 +9,14 @@
 <body>
   <div class="signup-container">
     <h2>Criar Conta na Feira</h2>
+    % if defined('error') and error:
+      <p style="color: red; text-align: center;">{{error}}</p>
+    % end
     <form method="POST" action="/register">
       <input type="text" name="username" placeholder="Nome completo" required />
       <input type="email" name="email" placeholder="E-mail" required />
       <input type="password" name="password" placeholder="Senha" required />
-      <input type="password" placeholder="Confirmar senha" required />
+      <input type="password" name="confirm_password" placeholder="Confirmar senha" required />
       <button type="submit" class="btn" id="submitButton">Cadastrar</button>
     </form>
     <a href="/login">Já tem uma conta? Entrar</a>

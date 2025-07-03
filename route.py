@@ -43,16 +43,16 @@ def teardown_session():
 def serve_static(filepath):
     return static_file(filepath, root='./app/static')
         
-@app.route('/helper')
+@app.route('/')
 def helper(info=None):
     return ctl.render('helper')
 
 #--------------------------------------------------------------------------------------
 
 app.route('/', callback=ctl.helper) # This line was already correct
-app.route('/login', callback=ctl.login)
+app.route('/login', callback=user_ctl.login)
 app.route('/login', method='POST', callback=user_ctl.login)
-app.route('/register', callback=ctl.register)
+app.route('/register', callback=user_ctl.register)
 app.route('/register', method='POST', callback=user_ctl.register)
 app.route('/logout', callback=user_ctl.logout)
 

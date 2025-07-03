@@ -1,5 +1,5 @@
 from app.controllers.userRecord import UserRecord, AdminUser
-from bottle import request, redirect, route, template
+from bottle import request, redirect, route
 from app.controllers.application import app_renderer
 
 class UserController:
@@ -40,10 +40,10 @@ class UserController:
                     request.session['user'] = user.id
                     redirect('/products')
                 else:
-                    return app_renderer.render_page('login', error='Usuário ou senha inválidos.')
+                    return app_renderer.render_page('login.html', error='Usuário ou senha inválidos.')
             else:
-                return app_renderer.render_page('login', error="Usuário ou senha inválidos.")
-        return app_renderer.render_page('login', error=None)
+                return app_renderer.render_page('login.html', error="Usuário ou senha inválidos.")
+        return app_renderer.render_page('login.html', error=None)
 
     @route('/register', methods=['GET', 'POST'])
     def register(self):
@@ -54,15 +54,15 @@ class UserController:
             email = request.forms.get('email')
 
             if password != confirm_password:
-                return app_renderer.render_page('/register', error="As senhas não correspondem.")
+                return app_renderer.render_page('criar_conta.html', error="As senhas não correspondem.")
             if self.__users.getUserByUsername(username):
-                return app_renderer.render_page('/register', error="Nome de usuário já existe.")
+                return app_renderer.render_page('criar_conta.html', error="Nome de usuário já existe.")
             if not username or not password or not email:
-                return app_renderer.render_page('/register', error="Todos os campos são obrigatórios.")
+                return app_renderer.render_page('criar_conta.html', error="Todos os campos são obrigatórios.")
 
             self.__users.book(username=username, password=password, email=email)
             redirect('/login')
-        return app_renderer.render_page('/register', error=None)
+        return app_renderer.render_page('criar_conta.html', error=None)
 
     @route('/logout')
     def logout(self):
