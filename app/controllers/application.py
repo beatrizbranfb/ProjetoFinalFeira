@@ -5,7 +5,7 @@ class Application:
 
     def render_page(self, template_name, **kwargs):
         kwargs['user_id'] = request.session.get('user_id')
-        kwargs['is_admin'] = request.session.get('is_admin', False)
+        kwargs['is_admin'] = request.session.get('role') == 'admin'
         return template(template_name, **kwargs)
 
     def __init__(self):
@@ -30,6 +30,26 @@ class Application:
     
     def products(self):
         return template('app/views/cliente_produto.html')
+    
+    def profile(self):
+        return template('app/views/cliente_perfil.html')
+    
+    def orders(self):
+        return template('app/views/cliente_pedidos.html')
+    
+    def administrador(self):
+        return template('app/views/administrador_dashboard.html')
+    
+    def stock(self):
+        return template('app/views/administrador_estoque.html')
+    
+    def admin_clientes(self):
+        return template('app/views/administrador_clientes.html')
+    
+    
+
+    
+
 
 
 app_renderer = Application()

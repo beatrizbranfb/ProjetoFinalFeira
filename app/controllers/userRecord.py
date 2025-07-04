@@ -74,6 +74,13 @@ class UserRecord():
             return self.__authenticated_users[session_id]
         else:
             return None
+    
+    def getUserByEmail(self, email):
+        for account_type in ['user_accounts', 'admin_accounts']:
+            for user in self.__all_users[account_type]:
+                if user.email == email:
+                    return user
+        return None
         
     def getUserByUsername(self, username):
         for account_type in ['user_accounts', 'admin_accounts']:

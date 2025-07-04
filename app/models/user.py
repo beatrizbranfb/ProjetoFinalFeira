@@ -1,20 +1,19 @@
 class User:
-    def __init__(self, id, username, password, email):
+    def __init__(self, id, username, password, email, role = 'user'):
         self.id = id
         self.username = username
         self.password = password
         self.email = email
+        self.role = role
 
     def is_admin(self):
         return False
 
 
 class AdminUser(User):
-    def __init__(self, user_id, username, password, email, permissions):
-        super().__init__(user_id, username, password, email)
-        self.permissions= permissions 
-        if not permissions:
-            permissions=["user"]
+    def __init__(self, id, username, password, email, permissions=None):
+        super().__init__(id, username, password, email, role = 'admin')
+        self.permissions = permissions if permissions is not None else []
 
     def is_admin(self):
         return True

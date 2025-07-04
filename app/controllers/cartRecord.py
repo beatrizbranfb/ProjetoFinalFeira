@@ -12,22 +12,29 @@ class CartRecord:
     def read(self):
         try:
             with open("app/controllers/db/orders.json", "r") as fjson:
-                order_data = json.load(fjson)
-                self.__all_orders = [Order(**order) for order in order_data]
-        except FileNotFoundError:
-            print('Não existem carrinhos registrados!')
+                orders_data = json.load(fjson)
+                self.__all_orders = []
+                for order_dict in orders_data:
+                    if isinstance(order_dict.get('order_date'), str):
+                        order_dict['order_date'] = datetime.fromisoformat(order_dict['order_date'])
+                    self.__all_orders.append(Order(**order_dict))
+        except (FileNotFoundError, json.JSONDecodeError):
+            print('Arquivo de carrinhos não encontrado ou corrompido. Começando com uma lista vazia.')
+            self.__all_orders = []
 
     def __write(self):
         try:
             with open("app/controllers/db/orders.json", "w") as fjson:
-                order_data = [vars(order) for order in self.__all_orders]
-                json.dump(order_data, fjson)
+                orders_list = [o.__dict__.copy() for o in self.__all_orders]
+                for order_dict in orders_list:
+                    order_dict['order_date'] = order_dict['order_date'].isoformat()
+                json.dump(orders_list, fjson, indent=4)
                 print('Arquivo gravado (carrinho)!')
         except FileNotFoundError:
             print('Não conseguiu gravar (carrinho)!')
 
     def add_order(self, user_id):
-        new_order = Order(len(self.__all_orders) + 1, user_id, datetime.now(), 0.0)
+        new_order = Order(len(self.__all_orders) + 1, user_id, datetime.now(), 0.0, status='pending')
         self.__all_orders.append(new_order)
         self.__write()
         return new_order
@@ -41,7 +48,13 @@ class CartRecord:
 
     def get_all_orders(self):
         return self.__all_orders
-    
+
+    def get_active_cart_by_user_id(self, user_id):
+        for order in reversed(self.__all_orders): # Search backwards to find the newest first
+            if order.user_id == user_id and order.status == 'pending':
+                return order
+        return None
+
     def get_user_orders(self, user_id):
         user_orders = [order for order in self.__all_orders if order.user_id == user_id]
         return user_orders
@@ -97,8 +110,8 @@ class CartItemRecord:
         self.__write()
         return new_item
     
-    def del_item(self, item_id):
-        item = next((item for item in self.__all_items if item.id == item_id), None)
+    def del_item(self, order_id, product_id):
+        item = self.get_cart_item(order_id, product_id)
         if item:
             self.__all_items.remove(item)
             self.__write()
@@ -109,12 +122,14 @@ class CartItemRecord:
         item = self.get_cart_item(order_id, product_id)
         if item:
             if new_quantity <= 0:
-                self.del_item(item.id)
+                self.del_item(order_id, product_id)
             else:
                 item.quantity = new_quantity
                 self.__write()
             return item
-        raise ValueError("Item não encontrado no carrinho.")
+        elif new_quantity > 0:
+            return self.add_item(order_id, product_id, new_quantity)
+        return None
 
     def get_all_items(self):
         return self.__all_items

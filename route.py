@@ -17,6 +17,8 @@ TEMPLATE_PATH.append(os.path.join(APP_ROOT_DIR, 'views'))
 app = Bottle()
 ctl = Application()
 user_ctl = UserController()
+product_ctl = ProductController()
+cart_ctl = CartController()
 
 sessions = {}
 
@@ -43,33 +45,37 @@ def teardown_session():
 def serve_static(filepath):
     return static_file(filepath, root='./app/static')
         
-@app.route('/helper')
+@app.route('/')
 def helper(info=None):
     return ctl.render('helper')
 
 #--------------------------------------------------------------------------------------
 
-app.route('/', callback=ctl.helper) # This line was already correct
-app.route('/login', callback=ctl.login)
-app.route('/login', method='POST', callback=user_ctl.login)
-app.route('/register', callback=ctl.register)
-app.route('/register', method='POST', callback=user_ctl.register)
+app.route('/', callback=ctl.helper) 
+app.route('/login', method=['GET', 'POST'], callback=user_ctl.login)
+app.route('/register', method=['GET', 'POST'], callback=user_ctl.register)
 app.route('/logout', callback=user_ctl.logout)
 
-app.route('/products/<product_id:int>', callback=ProductController.product_details)
-app.route('/products/add', callback=ProductController.add_product)
-app.route('/products/add', method='POST', callback=ProductController.add_product)
-app.route('/products/edit/<product_id:int>', callback=ProductController.edit_product)
-app.route('/products/edit/<product_id:int>', method='POST', callback=ProductController.edit_product)
-app.route('/products/delete/<product_id:int>', method='POST', callback=ProductController.delete_product)
-app.route('/products', callback=ProductController.list_products)
+app.route('/products/<product_id:int>', callback=product_ctl.product_details)
+app.route('/products/add', method=['GET', 'POST'], callback=product_ctl.add_product)
+app.route('/products/edit/<product_id:int>', method=['GET', 'POST'], callback=product_ctl.edit_product)
+app.route('/products/delete/<product_id:int>', method='POST', callback=product_ctl.delete_product)
+app.route('/products', callback=product_ctl.list_products)
 
-app.route('/cart', callback=CartController.view_cart)
-app.route('/cart/add/<product_id:int>', method='POST', callback=CartController.add_to_cart)
-app.route('/cart/remove/<product_id:int>', method='POST', callback=CartController.remove_from_cart)
-app.route('/cart/update/<product_id:int>', method='POST', callback=CartController.update_cart_item)
-app.route('/cart/checkout', method='POST', callback=CartController.checkout)
+app.route('/cart', callback=cart_ctl.view_cart)
+app.route('/cart/add/<product_id:int>', method='POST', callback=cart_ctl.add_to_cart)
+app.route('/cart/remove/<product_id:int>', method='POST', callback=cart_ctl.remove_from_cart)
+app.route('/cart/update/<product_id:int>', method='POST', callback=cart_ctl.update_cart_item)
+app.route('/cart/checkout', method='POST', callback=cart_ctl.checkout)
 
+app.route('/profile', callback=ctl.profile)
+app.route('/orders', callback=ctl.orders)
+
+app.route('/administrador', callback=user_ctl.admin_dashboard)
+app.route('/admin_clientes', callback=ctl.admin_clientes)
+app.route('/stock', callback=ctl.stock)
+
+run(app, host='localhost', port=8080)
 
 if __name__ == '__main__':
     run(app, host='localhost', port=8080, debug=True)

@@ -20,7 +20,7 @@ class ProductController:
     def list_products(self):
         products = self.__products.get_all_products()
         user_role = self.__user_controller.get_user_role()
-        return app_renderer.render_page('/products', products=products, user_role=user_role)
+        return app_renderer.render_page('cliente_produto.html', products=products, user_role=user_role)
 
     @route('/products/<product_id:int>')
     @login_required
@@ -43,7 +43,7 @@ class ProductController:
                 return app_renderer.render_page('produtos/adicionar_editar', product=None, error="Todos os campos são obrigatórios.")
 
             self.__products.add_product(name=name, description=description, price=price, stock=stock)
-            redirect('/products')
+            return redirect('/products')
         return app_renderer.render_page('produtos/adicionar_editar', product=None, error=None)
 
     @route('/products/edit/<product_id:int>', method=['GET', 'POST'])
@@ -65,7 +65,7 @@ class ProductController:
                 price=product.price,
                 stock=product.stock
             )
-            redirect('/products')
+            return redirect('/products')
         return app_renderer.render_page('produtos/adicionar_editar', product=product, error=None)
 
     @route('/products/delete/<product_id:int>', method=['POST'])
@@ -74,4 +74,4 @@ class ProductController:
         product = self.__products.get_product_by_id(product_id)
         if product:
             product.delete()
-        redirect('/products')
+        return redirect('/products')

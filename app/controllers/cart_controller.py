@@ -24,7 +24,7 @@ class CartController:
         cart = self.__cart_record.get_user_orders(user_id)
         if not cart:
             cart = self.__cart_record.add_order(user_id)
-        return app_renderer.render_page('carrinho listagem', cart=cart)
+        return app_renderer.render_page('cliente_carrinho.html', cart=cart)
 
     @route('/cart/add/<product_id:int>', method=['POST'])
     @login_required
@@ -40,7 +40,7 @@ class CartController:
             if quantity <= 0:
                 raise ValueError("Quantidade deve ser maior que zero.")
             self.__cart_item_record.add_item(cart.id, product_id, quantity)
-            redirect('/cart')
+            return redirect('/cart')
         except ValueError as e:
             return app_renderer.render_page('produtos/detalhes.tpl', product=ProductRecord.get_product_by_id(product_id), error=str(e))
 
@@ -52,7 +52,7 @@ class CartController:
         cart = self.__cart_record.get_user_orders(user_id)
         if cart:
             self.__cart_item_record.del_item(cart.id, product_id)
-        redirect('/cart')
+        return redirect('/cart')
 
     @route('/cart/update/<product_id:int>', method=['POST'])
     @login_required
@@ -68,7 +68,7 @@ class CartController:
         if cart_item:
             try:
                 cart_item.update_item_quantity(cart.id, product_id, new_quantity)
-                redirect('/cart')
+                return redirect('/cart')
             except ValueError as e:
                 return app_renderer.render_page('carrinho listagem.tpl', cart=cart, error=str(e))
         return redirect('/cart')
