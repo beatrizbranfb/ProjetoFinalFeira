@@ -40,6 +40,14 @@ class ProductRecord():
                 return product
         return None
     
+    def delete_product(self, product_id):
+        product_to_delete = self.get_product_by_id(product_id)
+        if product_to_delete:
+            self.__all_products.remove(product_to_delete)
+            self.__write()
+            return True
+        return False
+
     def update_product(self, product_id, name=None, price=None, stock=None, description=None):
         product = self.get_product_by_id(product_id)
         if not product:

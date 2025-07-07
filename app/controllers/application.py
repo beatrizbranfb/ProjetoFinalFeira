@@ -40,9 +40,6 @@ class Application:
     def administrador(self):
         return template('app/views/administrador_dashboard.html')
     
-    def stock(self):
-        return template('app/views/administrador_estoque.html')
-    
     def admin_clientes(self):
         return template('app/views/administrador_clientes.html')
     

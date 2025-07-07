@@ -6,6 +6,7 @@
   <title>Estoque - Painel Administrativo</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <link rel="stylesheet" type="text/css" href="../static/css/adm_style.css">
+  <script src="../static/js/stock.js"></script>
 </head>
 <body> 
   <header>
@@ -88,91 +89,45 @@
             </tr>
           </thead>
           <tbody>
+            % for product in products:
             <tr>
               <td>
                 <div style="display: flex; align-items: center; gap: 1rem;">
-                  <span>Maçã</span>
+                  <span>{{product.name}}</span>
                 </div>
               </td>
-              <td>Frutas vermelhas</td>
-              <td class="stock-high">120 kg</td>
-              <td>R$ 4,50</td>
-              <td>R$ 540,00</td>
-              <td><span class="badge badge-success">Disponível</span></td>
+              <td>{{product.description}}</td>
+              <td class="{{'stock-high' if product.stock > 100 else 'stock-low' if product.stock < 20 else 'stock-medium'}}">
+                {{product.stock}} kg
+              </td>
+              <td>R$ {{'%.2f' % product.price}}</td>
+              <td>R$ {{'%.2f' % (product.price * product.stock)}}</td>
               <td>
-                <button class="action-btn" title="Adicionar estoque"><i class="fas fa-plus-circle"></i></button>
-                <button class="action-btn" title="Remover estoque"><i class="fas fa-minus-circle"></i></button>
-                <button class="action-btn" title="Editar"><i class="fas fa-edit"></i></button>
+                % if product.stock < 20:
+                  <span class="badge badge-warning">Estoque baixo</span>
+                % else:
+                  <span class="badge badge-success">Disponível</span>
+                % end
+              </td>
+              <td>
+                <form action="/products/add_stock/{{product.id}}" method="post" style="display:inline;">
+                  <input type="hidden" name="quantity" value="10">
+                  <button class="action-btn" title="Adicionar estoque">
+                    <i class="fas fa-plus-circle"></i>
+                  </button>
+                </form>
+                <form action="/products/remove_stock/{{product.id}}" method="post" style="display:inline;">
+                  <input type="hidden" name="quantity" value="10">
+                  <button class="action-btn" title="Remover estoque">
+                    <i class="fas fa-minus-circle"></i>
+                  </button>
+                </form>
+                <a href="/products/edit/{{product.id}}" class="action-btn" title="Editar">
+                  <i class="fas fa-edit"></i>
+                </a>
               </td>
             </tr>
-            <tr>
-              <td>
-                <div style="display: flex; align-items: center; gap: 1rem;">
-                  <span>Banana</span>
-                </div>
-              </td>
-              <td>Frutas tropicais</td>
-              <td class="stock-medium">85 kg</td>
-              <td>R$ 3,20</td>
-              <td>R$ 272,00</td>
-              <td><span class="badge badge-success">Disponível</span></td>
-              <td>
-                <button class="action-btn" title="Adicionar estoque"><i class="fas fa-plus-circle"></i></button>
-                <button class="action-btn" title="Remover estoque"><i class="fas fa-minus-circle"></i></button>
-                <button class="action-btn" title="Editar"><i class="fas fa-edit"></i></button>
-              </td>
-            </tr>
-            <tr>
-              <td>
-                <div style="display: flex; align-items: center; gap: 1rem;">
-                  <span>Laranja</span>
-                </div>
-              </td>
-              <td>Frutas cítricas</td>
-              <td class="stock-low">15 kg</td>
-              <td>R$ 2,80</td>
-              <td>R$ 42,00</td>
-              <td><span class="badge badge-warning">Estoque baixo</span></td>
-              <td>
-                <button class="action-btn" title="Adicionar estoque"><i class="fas fa-plus-circle"></i></button>
-                <button class="action-btn" title="Remover estoque"><i class="fas fa-minus-circle"></i></button>
-                <button class="action-btn" title="Editar"><i class="fas fa-edit"></i></button>
-              </td>
-            </tr>
-            <tr>
-              <td>
-                <div style="display: flex; align-items: center; gap: 1rem;">
-                  <span>Morango</span>
-                </div>
-              </td>
-              <td>Frutas vermelhas</td>
-              <td class="stock-high">95 kg</td>
-              <td>R$ 8,90</td>
-              <td>R$ 845,50</td>
-              <td><span class="badge badge-success">Disponível</span></td>
-              <td>
-                <button class="action-btn" title="Adicionar estoque"><i class="fas fa-plus-circle"></i></button>
-                <button class="action-btn" title="Remover estoque"><i class="fas fa-minus-circle"></i></button>
-                <button class="action-btn" title="Editar"><i class="fas fa-edit"></i></button>
-              </td>
-            </tr>
-            <tr>
-              <td>
-                <div style="display: flex; align-items: center; gap: 1rem;">
-                  <span>Abacaxi</span>
-                </div>
-              </td>
-              <td>Frutas tropicais</td>
-              <td class="stock-medium">45 kg</td>
-              <td>R$ 5,50</td>
-              <td>R$ 247,50</td>
-              <td><span class="badge badge-success">Disponível</span></td>
-              <td>
-                <button class="action-btn" title="Adicionar estoque"><i class="fas fa-plus-circle"></i></button>
-                <button class="action-btn" title="Remover estoque"><i class="fas fa-minus-circle"></i></button>
-                <button class="action-btn" title="Editar"><i class="fas fa-edit"></i></button>
-              </td>
-            </tr>
+            % end
           </tbody>
         </table>
       </div>
@@ -192,38 +147,38 @@
     </div>
   </main>
 
-  <div class="modal" id="addProductModal">
+  <div class="modal" id="addProductModal" style="display: none;">
     <div class="modal-content">
       <div class="modal-header">
         <h3 class="modal-title">Adicionar Nova Fruta</h3>
         <button class="close-modal">&times;</button>
       </div>
-      <form id="addProductForm">
+      <form id="addProductForm" action="/products/add" method="post" enctype="multipart/form-data">
         <div class="form-group">
           <label for="productName">Nome da Fruta</label>
-          <input type="text" id="productName" class="form-control" required>
+          <input type="text" id="productName" name="name" class="form-control" required>
         </div>
         <div class="form-group">
           <label for="productCategory">Categoria</label>
-          <select id="productCategory" class="form-control" required>
+          <select id="productCategory" name="category" class="form-control" required>
             <option value="">Selecione uma categoria</option>
-            <option value="tropical">Frutas tropicais</option>
-            <option value="citrica">Frutas cítricas</option>
-            <option value="vermelha">Frutas vermelhas</option>
-            <option value="outra">Outras</option>
+            <option value="Frutas tropicais">Frutas tropicais</option>
+            <option value="Frutas cítricas">Frutas cítricas</option>
+            <option value="Frutas vermelhas">Frutas vermelhas</option>
+            <option value="Outras">Outras</option>
           </select>
         </div>
         <div class="form-group">
           <label for="productQuantity">Quantidade (kg)</label>
-          <input type="number" id="productQuantity" class="form-control" min="0" step="0.1" required>
+          <input type="number" id="productQuantity" name="stock" class="form-control" min="0" step="0.1" required>
         </div>
         <div class="form-group">
           <label for="productPrice">Preço por kg (R$)</label>
-          <input type="number" id="productPrice" class="form-control" min="0" step="0.01" required>
+          <input type="number" id="productPrice" name="price" class="form-control" min="0" step="0.01" required>
         </div>
         <div class="form-group">
           <label for="productImage">Imagem da Fruta</label>
-          <input type="file" id="productImage" class="form-control" accept="image/*">
+          <input type="file" id="productImage" name="image" class="form-control" accept="image/*">
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-danger close-modal">Cancelar</button>

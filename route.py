@@ -73,9 +73,9 @@ app.route('/orders', callback=ctl.orders)
 
 app.route('/administrador', callback=user_ctl.admin_dashboard)
 app.route('/admin_clientes', callback=ctl.admin_clientes)
-app.route('/stock', callback=ctl.stock)
 
-run(app, host='localhost', port=8080)
+app.route('/stock', callback=product_ctl.view_stock)
+app.route('/stock/add', method='POST', callback=product_ctl.add_product)
 
 if __name__ == '__main__':
     run(app, host='localhost', port=8080, debug=True)
