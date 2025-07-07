@@ -1,7 +1,7 @@
 # ProjetoFinalFeira
 
 ## DIAGRAMA E RELAÇÕES UML
-*Relações UML*
+###Relações UML
 **Relações de Herança**
 User e AdminUser:
 
@@ -16,11 +16,11 @@ A classe Application contêm métodos como render_page e login que "usam" os seu
 
 UserController e UserRecord:
 
-UserController "tem um" uma instância de UserRecord.(self.__users = UserRecord()) no método __init__ de UserController.
+UserController "tem um" uma instância de UserRecord. Self.__users = UserRecord() no método __init__ de UserController.
 
 UserController utiliza métodos de UserRecord para gerenciar usuários (login, registro, busca por email/username, etc.).
 
 UserRecord e User/AdminUser:
 
-*DIAGRAMA UML*
-![Diagrama de classes](![alt text](image.png))
+###DIAGRAMA UML
+![alt text](image.png)
