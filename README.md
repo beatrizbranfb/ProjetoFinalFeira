@@ -1,7 +1,7 @@
 # ProjetoFinalFeira
 
 ## DIAGRAMA E RELAÇÕES UML
-###Relações UML
+- Relações UML
 **Relações de Herança**
 User e AdminUser:
 
@@ -22,5 +22,5 @@ UserController utiliza métodos de UserRecord para gerenciar usuários (login, r
 
 UserRecord e User/AdminUser:
 
-###DIAGRAMA UML
+- DIAGRAMA UML
 ![alt text](image.png)
