@@ -57,6 +57,8 @@ app.route('/register', method=['GET', 'POST'], callback=user_ctl.register)
 app.route('/logout', callback=user_ctl.logout)
 
 app.route('/products/<product_id:int>', callback=product_ctl.product_details)
+app.route('/products/add_stock/<product_id:int>', method='POST', callback=product_ctl.add_stock)
+app.route('/products/remove_stock/<product_id:int>', method='POST', callback=product_ctl.remove_stock)
 app.route('/products/add', method=['GET', 'POST'], callback=product_ctl.add_product)
 app.route('/products/edit/<product_id:int>', method=['GET', 'POST'], callback=product_ctl.edit_product)
 app.route('/products/delete/<product_id:int>', method='POST', callback=product_ctl.delete_product)
@@ -72,7 +74,7 @@ app.route('/profile', callback=ctl.profile)
 app.route('/orders', callback=ctl.orders)
 
 app.route('/administrador', callback=user_ctl.admin_dashboard)
-app.route('/admin_clientes', callback=ctl.admin_clientes)
+app.route('/admin_clientes', callback=user_ctl.admin_clientes)
 
 app.route('/stock', callback=product_ctl.view_stock)
 app.route('/stock/add', method='POST', callback=product_ctl.add_product)

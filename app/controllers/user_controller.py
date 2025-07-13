@@ -85,5 +85,26 @@ class UserController:
     @admin_required
     def admin_dashboard(self):
         return app_renderer.render_page('administrador_dashboard.html')
+    
+    @route('/admin_clientes')
+    @admin_required
+    def admin_clientes(self):
+        users = self.__users.getUserAccount()
+
+        clients = []
+        for i, user in enumerate(users):
+            clients.append({
+                "username": user.username,
+                "email": user.email,
+                "phone": f"(61) 9{9000+i}-{9000+i}",
+                "address": f"Rua Exemplo, Nº {100+i}",
+                "order_id": 2500 + i,
+                "order_date": f"{10+i:02d}/07/2025",
+                "order_value": round(150 + i * 15.75, 2),
+                "status": ["Pendente", "Atrasado", "Processando"][i % 3],
+                "days_pending": i + 1
+            })
+
+        return app_renderer.render_page("administrador_clientes.html", clients=clients)
 
 ctl = UserController()

@@ -71,8 +71,7 @@
             <option>Valor do pedido</option>
           </select>
         </div>
-      </div>
-      
+      </div>    
       <div class="table-container">
         <table>
           <thead>
@@ -87,78 +86,34 @@
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <td>
-                <strong>Ciclano</strong><br>
-                <small>ciclano@gmail.com</small><br>
-                <small>(61) 99999-9999</small><br>
-                <small>endereço qualquer</small>
-              </td>
-              <td>#2548</td>
-              <td>10/06/2025</td>
-              <td>R$ 245,90</td>
-              <td><span class="status-pending">Pendente</span></td>
-              <td>2 dias</td>
-              <td>
-                <button class="action-btn" title="Detalhes"><i class="fas fa-eye"></i></button>
-                <button class="action-btn" title="Marcar como entregue"><i class="fas fa-check-circle"></i></button>
-                <button class="action-btn" title="Contatar cliente"><i class="fas fa-phone-alt"></i></button>
-              </td>
-            </tr>
-            <tr>
-              <td>
-                <strong>Beatriz Brandão</strong><br>
-                <small>beatrizb@gmail.com</small><br>
-                <small>(61) 98888-8888</small><br>
-                <small>casa 123 rua 321</small>
-              </td>
-              <td>#2547</td>
-              <td>09/06/2025</td>
-              <td>R$ 189,50</td>
-              <td><span class="status-delayed">Atrasado</span></td>
-              <td>5 dias</td>
-              <td>
-                <button class="action-btn" title="Detalhes"><i class="fas fa-eye"></i></button>
-                <button class="action-btn" title="Marcar como entregue"><i class="fas fa-check-circle"></i></button>
-                <button class="action-btn" title="Contatar cliente"><i class="fas fa-phone-alt"></i></button>
-              </td>
-            </tr>
-            <tr>
-              <td>
-                <strong>Renan</strong><br>
-                <small>renan@gmail.com</small><br>
-                <small>(61) 97777-7777</small><br>
-                <small>endereço aqui</small>
-              </td>
-              <td>#2546</td>
-              <td>09/06/2025</td>
-              <td>R$ 320,00</td>
-              <td><span class="status-pending">Pendente</span></td>
-              <td>3 dias</td>
-              <td>
-                <button class="action-btn" title="Detalhes"><i class="fas fa-eye"></i></button>
-                <button class="action-btn" title="Marcar como entregue"><i class="fas fa-check-circle"></i></button>
-                <button class="action-btn" title="Contatar cliente"><i class="fas fa-phone-alt"></i></button>
-              </td>
-            </tr>
-            <tr>
-              <td>
-                <strong>Felipe Nunes</strong><br>
-                <small>felipe@gmail.com</small><br>
-                <small>(61) 96666-6666</small><br>
-                <small>endereço aqui</small>
-              </td>
-              <td>#2545</td>
-              <td>08/06/2025</td>
-              <td>R$ 156,75</td>
-              <td><span class="status-delayed">Atrasado</span></td>
-              <td>7 dias</td>
-              <td>
-                <button class="action-btn" title="Detalhes"><i class="fas fa-eye"></i></button>
-                <button class="action-btn" title="Marcar como entregue"><i class="fas fa-check-circle"></i></button>
-                <button class="action-btn" title="Contatar cliente"><i class="fas fa-phone-alt"></i></button>
-              </td>
-            </tr>
+          % for client in clients:
+          <tr>
+            <td>
+              <strong>{{client["username"]}}</strong><br>
+              <small>{{client["email"]}}</small><br>
+              <small>{{client["phone"]}}</small><br>
+              <small>{{client["address"]}}</small>
+            </td>
+            <td>#{{client["order_id"]}}</td>
+            <td>{{client["order_date"]}}</td>
+            <td>R$ {{'%.2f' % client["order_value"]}}</td>
+            <td>
+              % if client["status"] == 'Atrasado':
+                <span class="status-delayed">Atrasado</span>
+              % elif client["status"] == 'Processando':
+                <span class="status-processing">Processando</span>
+              % else:
+                <span class="status-pending">Pendente</span>
+              % end
+            </td>
+            <td>{{client["days_pending"]}} dias</td>
+            <td>
+              <button class="action-btn" title="Detalhes"><i class="fas fa-eye"></i></button>
+              <button class="action-btn" title="Marcar como entregue"><i class="fas fa-check-circle"></i></button>
+              <button class="action-btn" title="Contatar cliente"><i class="fas fa-phone-alt"></i></button>
+            </td>
+          </tr>
+          % end
           </tbody>
         </table>
       </div>

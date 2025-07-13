@@ -53,27 +53,34 @@
         </button>
       </div>
       
-      <div class="search-filter">
-        <div class="search-box">
-          <i class="fas fa-search"></i>
-          <input type="text" placeholder="Pesquisar frutas...">
+<form id="filterForm" action="/stock" method="get">
+  <div class="search-filter">
+    
+    <div class="search-box">
+      <i class="fas fa-search"></i>
+      <input type="text" name="search" class="search-input" placeholder="Pesquisar frutas..." value="{{search_query or ''}}"/>
+    </div>
+          <div class="filter-group">
+            <select name="category" class="filter-select" onchange="this.form.submit()">
+              <option value="" % if not selected_category else %>Todas as categorias</option>
+              <option value="Frutas tropicais" % if selected_category == 'Frutas tropicais' else %>Frutas tropicais</option>
+              <option value="Frutas cítricas" % if selected_category == 'Frutas cítricas' else %>Frutas cítricas</option>
+              <option value="Frutas vermelhas" % if selected_category == 'Frutas vermelhas' else %>Frutas vermelhas</option>
+              <option value="Outras" % if selected_category == 'Outras' else %>Outras</option>
+            </select>
+
+            <select name="sort" class="filter-select" onchange="this.form.submit()">
+              <option value="">Ordenar por</option>
+              <option value="name_asc" % if sort_option == 'name_asc' else %>Nome (A-Z)</option>
+              <option value="name_desc" % if sort_option == 'name_desc' else %>Nome (Z-A)</option>
+              <option value="stock_desc" % if sort_option == 'stock_desc' else %>Quantidade (maior)</option>
+              <option value="stock_asc" % if sort_option == 'stock_asc' else %>Quantidade (menor)</option>
+            </select>
+          </div>
         </div>
-        <div class="filter-options">
-          <select class="filter-select">
-            <option>Todas as categorias</option>
-            <option>Frutas tropicais</option>
-            <option>Frutas cítricas</option>
-            <option>Frutas vermelhas</option>
-          </select>
-          <select class="filter-select">
-            <option>Ordenar por</option>
-            <option>Nome (A-Z)</option>
-            <option>Nome (Z-A)</option>
-            <option>Quantidade (maior)</option>
-            <option>Quantidade (menor)</option>
-          </select>
-        </div>
-      </div>
+      </form>
+
+
       
       <div class="table-container">
         <table>
@@ -111,13 +118,13 @@
               </td>
               <td>
                 <form action="/products/add_stock/{{product.id}}" method="post" style="display:inline;">
-                  <input type="hidden" name="quantity" value="10">
+                  <input type="number" name="quantity" value="10" min="1" style="width: 50px;">
                   <button class="action-btn" title="Adicionar estoque">
                     <i class="fas fa-plus-circle"></i>
                   </button>
                 </form>
                 <form action="/products/remove_stock/{{product.id}}" method="post" style="display:inline;">
-                  <input type="hidden" name="quantity" value="10">
+                  <input type="number" name="quantity" value="10" min="1" max="{{product.stock}}" style="width: 50px;">
                   <button class="action-btn" title="Remover estoque">
                     <i class="fas fa-minus-circle"></i>
                   </button>
@@ -130,19 +137,6 @@
             % end
           </tbody>
         </table>
-      </div>
-      
-      <div class="pagination">
-        <div class="pagination-info">
-          Mostrando 1 a 5 de 15 produtos
-        </div>
-        <div class="pagination-controls">
-          <button class="page-btn"><i class="fas fa-chevron-left"></i></button>
-          <button class="page-btn active">1</button>
-          <button class="page-btn">2</button>
-          <button class="page-btn">3</button>
-          <button class="page-btn"><i class="fas fa-chevron-right"></i></button>
-        </div>
       </div>
     </div>
   </main>

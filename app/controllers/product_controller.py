@@ -14,14 +14,40 @@ class ProductController:
             'add_product': self.add_product,
             'edit_product': self.edit_product,
             'delete_product': self.delete_product,
-            'view_stock': self.view_stock
+            'view_stock': self.view_stock,
+            'add_stock': self.add_stock,
+            'remove_stock': self.remove_stock,
         }
     
     @route('/stock')
     @admin_required
     def view_stock(self):
-        products = self.__products.get_all_products()
-        return app_renderer.render_page('administrador_estoque.html', products=products)
+        all_products = self.__products.get_all_products()
+        products = all_products
+
+        selected_category = request.query.get('category')
+        search_query = request.query.get('search')
+        sort_by = request.query.get('sort')
+
+        if selected_category:
+            products = [p for p in products if p.description == selected_category]
+        
+        if search_query:
+            search_lower = search_query.lower()
+            products = [p for p in products if search_lower in p.name.lower()]
+        if sort_by:
+            reverse = sort_by.endswith('_desc')
+            key_attr = sort_by.split('_')[0]
+            
+            if key_attr in ['name', 'stock']:
+                products.sort(key=lambda p: getattr(p, key_attr), reverse=reverse)
+
+        return app_renderer.render_page(
+            'administrador_estoque.html',
+            products=products,
+            selected_category=selected_category,
+            search_query=search_query
+        )
 
     @route('/products')
     @login_required
@@ -57,11 +83,13 @@ class ProductController:
         
         description = category
 
-        self.__products.add_product(name=name, price=price, stock=stock, description=description)
+        try:
+            self.__products.add_product(name=name, price=price, stock=stock, description=description)
+        except Exception as e:
+            return app_renderer.render_page('error_500', message=f"Erro ao adicionar produto: {str(e)}")
         return redirect('/stock')
         
     @route('/products/edit/<product_id:int>', method=['GET', 'POST'])
-    @admin_required
     def edit_product(self, product_id):
         product = self.__products.get_product_by_id(product_id)
         if not product:
@@ -69,15 +97,18 @@ class ProductController:
 
         if request.method == 'POST':
             product.name = request.forms.get('name')
-            product.description = request.forms.get('description')
-            product.price = float(request.forms.get('price'))
-            product.stock = int(request.forms.get('stock'))
+            product.description = request.forms.get('category') 
+            try:
+                product.price = float(request.forms.get('price'))
+                product.stock = int(request.forms.get('stock'))
+            except ValueError:
+                return app_renderer.render_page('error_400', message="Preço e quantidade devem ser números.")
+            
             product = self.__products.update_product(
                 product_id=product.id,
-                name=product.name,
-                description=product.description,
-                price=product.price,
-                stock=product.stock
+            description=product.description,
+            price=product.price,
+            stock=product.stock
             )
             return redirect('/stock')
         return app_renderer.render_page('produtos/adicionar_editar', product=product, error=None)
@@ -86,4 +117,24 @@ class ProductController:
     @admin_required
     def delete_product(self, product_id):
         self.__products.delete_product(product_id)
+        return redirect('/stock')
+    
+    @route('/products/add_stock/<product_id:int>', method='POST')
+    @admin_required
+    def add_stock(self, product_id):
+        quantity = int(request.forms.get('quantity') or 0)
+        product = self.__products.get_product_by_id(product_id)
+        if product:
+            new_stock = product.stock + quantity
+            self.__products.update_product(product_id=product.id, name=product.name, description=product.description, price=product.price, stock=new_stock)
+        return redirect('/stock')
+
+
+    @route('/products/remove_stock/<product_id:int>', method='POST')
+    def remove_stock(self, product_id):
+        quantity = int(request.forms.get('quantity') or 0)
+        product = self.__products.get_product_by_id(product_id)
+        if product:
+            new_stock = max(product.stock - quantity, 0)
+            self.__products.update_product(product_id=product.id, name=product.name, description=product.description, price=product.price, stock=new_stock)
         return redirect('/stock')
