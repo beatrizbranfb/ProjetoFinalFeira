@@ -98,38 +98,27 @@
             <td>{{client["order_date"]}}</td>
             <td>R$ {{'%.2f' % client["order_value"]}}</td>
             <td>
-              % if client["status"] == 'Atrasado':
-                <span class="status-delayed">Atrasado</span>
-              % elif client["status"] == 'Processando':
-                <span class="status-processing">Processando</span>
-              % else:
+              % if client["status"] == 'pending':
                 <span class="status-pending">Pendente</span>
+              % elif client["status"] == 'processing':
+                <span class="status-processing">Processando</span>
+              % elif client["status"] == 'completed':
+                <span class="status-delivered">Entregue</span>
+              % elif client["status"] == 'canceled':
+                <span class="status-canceled">Cancelado</span>
+              % else:
+                <span class="status-delayed">{{client["status"].capitalize()}}</span>
               % end
             </td>
             <td>{{client["days_pending"]}} dias</td>
             <td>
               <button class="action-btn" title="Detalhes"><i class="fas fa-eye"></i></button>
               <button class="action-btn" title="Marcar como entregue"><i class="fas fa-check-circle"></i></button>
-              <button class="action-btn" title="Contatar cliente"><i class="fas fa-phone-alt"></i></button>
             </td>
           </tr>
           % end
           </tbody>
         </table>
-      </div>
-      
-      <div class="pagination">
-        <div class="pagination-info">
-          Mostrando 1 a 5 de 23 registros
-        </div>
-        <div class="pagination-controls">
-          <button class="page-btn"><i class="fas fa-chevron-left"></i></button>
-          <button class="page-btn active">1</button>
-          <button class="page-btn">2</button>
-          <button class="page-btn">3</button>
-          <button class="page-btn">4</button>
-          <button class="page-btn"><i class="fas fa-chevron-right"></i></button>
-        </div>
       </div>
     </div>
   </main>
