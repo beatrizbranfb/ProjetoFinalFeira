@@ -11,10 +11,11 @@ class CartController:
         self.__cart_item_record = CartItemRecord()
         self.pages = {
             'view_cart': self.view_cart,
+            'view_orders': self.view_orders,
             'add_to_cart': self.add_to_cart,
             'remove_from_cart': self.remove_from_cart,
             'update_cart_item': self.update_cart_item,
-            'checkout': self.checkout
+            'checkout': self.checkout,
         }
 
     @route('/cart')
@@ -25,6 +26,13 @@ class CartController:
         if not cart:
             cart = self.__cart_record.add_order(user_id)
         return app_renderer.render_page('cliente_carrinho.html', cart=cart)
+    
+    @route('/orders')
+    @login_required
+    def view_orders(self):
+        user_id = request.session.get('user_id')
+        orders = self.__cart_record.get_user_orders(user_id)
+        return app_renderer.render_page('cliente_pedidos.html', orders=orders)
 
     @route('/cart/add/<product_id:int>', method=['POST'])
     @login_required
@@ -62,7 +70,7 @@ class CartController:
             new_quantity = int(request.forms.get('quantity', 0))
         except (ValueError, TypeError):
             cart = self.__cart_record.get_user_orders(user_id)
-            return app_renderer.render_page('carrinho listagem.tpl', cart=cart, error="Quantidade inválida.")
+            return app_renderer.render_page('cliente_carrinho.html', cart=cart, error="Quantidade inválida.")
 
         cart_item = self.__cart_item_record.get_cart_item(cart.id, product_id)
         if cart_item:
@@ -70,7 +78,7 @@ class CartController:
                 cart_item.update_item_quantity(cart.id, product_id, new_quantity)
                 return redirect('/cart')
             except ValueError as e:
-                return app_renderer.render_page('carrinho listagem.tpl', cart=cart, error=str(e))
+                return app_renderer.render_page('cliente_carrinho.html', cart=cart, error=str(e))
         return redirect('/cart')
 
     @route('/cart/checkout', method=['POST'])
@@ -80,10 +88,11 @@ class CartController:
         cart = self.__cart_record.get_user_orders(user_id)
 
         if not cart or not cart.items:
-            return app_renderer.render_page('carrinho listagem', cart=cart, error="Seu carrinho está vazio.")
+            return app_renderer.render_page('cliente_carrinho.html', cart=cart, error="Seu carrinho está vazio.")
 
         try:
             cart.update_order_status()
-            return app_renderer.render_page('carrinho completo', order=cart)
+            return app_renderer.render_page('cliente_pedido.html', order=cart)
         except ValueError as e:
-            return app_renderer.render_page('carrinho listagem', cart=cart, error=str(e))
+            return app_renderer.render_page('cliente_carrinho.html', cart=cart, error=str(e))
+

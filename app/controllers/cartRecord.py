@@ -50,7 +50,7 @@ class CartRecord:
         return self.__all_orders
 
     def get_active_cart_by_user_id(self, user_id):
-        for order in reversed(self.__all_orders): # Search backwards to find the newest first
+        for order in reversed(self.__all_orders):
             if order.user_id == user_id and order.status == 'pending':
                 return order
         return None

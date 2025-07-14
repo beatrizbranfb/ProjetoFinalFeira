@@ -17,7 +17,7 @@ def admin_required(func):
             return func(*args, **kwargs)
         else:
             print("Acesso negado: usuário não é um administrador.")
-            return redirect('/login')
+            return redirect('/acesso_neg')
     return wrapper
 
 class UserController:
@@ -27,7 +27,12 @@ class UserController:
         self.pages = {
             'login': self.login,
             'register': self.register,
-            'logout': self.logout
+            'logout': self.logout,
+            'profile': self.profile,
+            'admin_dashboard': self.admin_dashboard,
+            'admin_clientes': self.admin_clientes,
+            'admin_stock': self.admin_stock,
+            'acesso_neg': self.acesso_neg
         }
 
     def is_logged_in(self):
@@ -47,9 +52,11 @@ class UserController:
                 if user.password == password:
                     request.session['user_id'] = user.id
                     request.session['role'] = user.role
-                    if user.role == 'admin':
-                        return redirect('/administrador')
-                    else:
+                    self.__users.checkUser(user.username, user.password)
+                    if request.session['role'] == 'admin':
+                        request.session['permissions'] = user.permissions
+                        return redirect('/admin')
+                    elif request.session['role'] == 'user':
                         return redirect('/products')
                 else:
                     return app_renderer.render_page('login.html', error='Usuário ou senha inválidos.')
@@ -80,10 +87,29 @@ class UserController:
     def logout(self):
         request.session.clear()
         return redirect('/login')
+    
+    @route('/profile')
+    @login_required
+    def profile(self):
+        return app_renderer.render_page('cliente_perfil.html')
 
-    @route('/administrador')
+    @route('/admin')
     @admin_required
     def admin_dashboard(self):
         return app_renderer.render_page('administrador_dashboard.html')
+    
+    @route('/admin_clientes')
+    @admin_required
+    def admin_clientes(self):
+        return app_renderer.render_page('administrador_clientes.html')
+
+    @route('/admin_stock')
+    @admin_required
+    def admin_stock(self):
+        return app_renderer.render_page('administrador_estoque.html')
+
+    @route('/acesso_neg')
+    def acesso_neg(self):
+        return app_renderer.render_page('acesso_neg.html')
 
 ctl = UserController()

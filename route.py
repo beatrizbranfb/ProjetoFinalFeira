@@ -1,4 +1,4 @@
-from bottle import Bottle, run, TEMPLATE_PATH, request, response, static_file, route, template, redirect
+from bottle import Bottle, run, TEMPLATE_PATH, request, response, static_file
 import os
 import uuid
 import sys
@@ -56,11 +56,11 @@ app.route('/login', method=['GET', 'POST'], callback=user_ctl.login)
 app.route('/register', method=['GET', 'POST'], callback=user_ctl.register)
 app.route('/logout', callback=user_ctl.logout)
 
+app.route('/products', callback=product_ctl.list_products)
 app.route('/products/<product_id:int>', callback=product_ctl.product_details)
 app.route('/products/add', method=['GET', 'POST'], callback=product_ctl.add_product)
 app.route('/products/edit/<product_id:int>', method=['GET', 'POST'], callback=product_ctl.edit_product)
 app.route('/products/delete/<product_id:int>', method='POST', callback=product_ctl.delete_product)
-app.route('/products', callback=product_ctl.list_products)
 
 app.route('/cart', callback=cart_ctl.view_cart)
 app.route('/cart/add/<product_id:int>', method='POST', callback=cart_ctl.add_to_cart)
@@ -68,14 +68,15 @@ app.route('/cart/remove/<product_id:int>', method='POST', callback=cart_ctl.remo
 app.route('/cart/update/<product_id:int>', method='POST', callback=cart_ctl.update_cart_item)
 app.route('/cart/checkout', method='POST', callback=cart_ctl.checkout)
 
-app.route('/profile', callback=ctl.profile)
-app.route('/orders', callback=ctl.orders)
+app.route('/profile', callback=user_ctl.profile)
+app.route('/orders', callback=cart_ctl.view_orders)
 
-app.route('/administrador', callback=user_ctl.admin_dashboard)
-app.route('/admin_clientes', callback=ctl.admin_clientes)
-app.route('/stock', callback=ctl.stock)
+app.route('/admin', callback=user_ctl.admin_dashboard)
+app.route('/admin_clientes', callback=user_ctl.admin_clientes)
+app.route('/admin_stock', callback=user_ctl.admin_stock)
+app.route('/acesso_neg', callback=user_ctl.acesso_neg)
 
-run(app, host='localhost', port=8080)
+#--------------------------------------------------------------------------------------
 
 if __name__ == '__main__':
     run(app, host='localhost', port=8080, debug=True)

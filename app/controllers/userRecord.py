@@ -68,6 +68,9 @@ class UserRecord():
 
     def getUserAccount(self):
         return self.__all_users['user_accounts']
+
+    def getAdminAccount(self):
+        return self.__all_users['admin_accounts']
     
     def getCurrentUser(self, session_id):
         if session_id in self.__authenticated_users:
