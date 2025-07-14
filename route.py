@@ -58,7 +58,10 @@ app.route('/logout', callback=user_ctl.logout)
 
 app.route('/products', callback=product_ctl.list_products)
 app.route('/products/<product_id:int>', callback=product_ctl.product_details)
+app.route('/products/add_stock/<product_id:int>', method='POST', callback=product_ctl.add_stock)
+app.route('/products/remove_stock/<product_id:int>', method='POST', callback=product_ctl.remove_stock)
 app.route('/products/add', method=['GET', 'POST'], callback=product_ctl.add_product)
+app.route('/products/add/<product_id:int>', method='POST', callback=product_ctl.add_product)
 app.route('/products/edit/<product_id:int>', method=['GET', 'POST'], callback=product_ctl.edit_product)
 app.route('/products/delete/<product_id:int>', method='POST', callback=product_ctl.delete_product)
 
@@ -71,12 +74,13 @@ app.route('/cart/checkout', method='POST', callback=cart_ctl.checkout)
 app.route('/profile', callback=user_ctl.profile)
 app.route('/orders', callback=cart_ctl.view_orders)
 
-app.route('/admin', callback=user_ctl.admin_dashboard)
+app.route('/administrador', callback=user_ctl.admin_dashboard)
 app.route('/admin_clientes', callback=user_ctl.admin_clientes)
-app.route('/admin_stock', callback=user_ctl.admin_stock)
 app.route('/acesso_neg', callback=user_ctl.acesso_neg)
+app.route('/admin_stock', callback=user_ctl.admin_stock)
 
-#--------------------------------------------------------------------------------------
+app.route('/stock', callback=product_ctl.view_stock)
+app.route('/stock/add', method='POST', callback=product_ctl.add_product)
 
 if __name__ == '__main__':
     run(app, host='localhost', port=8080, debug=True)

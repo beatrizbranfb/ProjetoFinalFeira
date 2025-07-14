@@ -53,14 +53,6 @@
       <div class="tab-content active">
         <div class="page-header">
           <h1 class="page-title">Nossos Produtos</h1>
-          <div class="filter-options">
-            <select class="filter-select">
-              <option value="all">Todas as categorias</option>
-              <option value="fruits">Frutas</option>
-              <option value="vegetables">Legumes</option>
-              <option value="greens">Verduras</option>
-            </select>
-          </div>
         </div>
         
         <div class="search-filter">
@@ -79,9 +71,21 @@
         </div>
         
         <div class="products-grid">
-        </div>
-      </div>
+          % for product in products:
+          <div class="product-card">
+            <img src="{{product.image or ''}}" alt="{{product.name}}" class="product-image">
+            <h3 class="product-name">{{product.name}}</h3>
+            <p class="product-price">R$ {{'%.2f' % product.price}} /kg</p>
 
+            <form action="/cart/add/{{product.id}}" method="post">
+              <input type="number" name="quantity" min="1" value="1" class="quantity-input">
+              <button type="submit" class="btn btn-primary">
+                <i class="fas fa-cart-plus"></i> Adicionar
+              </button>
+            </form>
+          </div>
+          % end
+        </div>
     </div>
   </main>
 

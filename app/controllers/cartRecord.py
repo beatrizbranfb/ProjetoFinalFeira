@@ -1,7 +1,7 @@
 from app.models.order import Order, OrderItem
 import json
 from datetime import datetime
-
+from app.controllers.productRecord import ProductRecord
 
 class CartRecord:
 
@@ -50,7 +50,7 @@ class CartRecord:
         return self.__all_orders
 
     def get_active_cart_by_user_id(self, user_id):
-        for order in reversed(self.__all_orders):
+        for order in reversed(self.__all_orders): 
             if order.user_id == user_id and order.status == 'pending':
                 return order
         return None
@@ -81,6 +81,45 @@ class CartRecord:
             return order
         return None
 
+    def get_user_cart(self, user_id):
+        cart = self.get_active_cart_by_user_id(user_id)
+        if not cart:
+            return None
+
+        cart_item_record = CartItemRecord()  
+        product_record = ProductRecord()
+
+        items = []
+        subtotal = 0.0
+
+        for item in cart_item_record.get_all_items():
+            if item.order_id == cart.id:
+                product = product_record.get_product_by_id(item.product_id)
+                if product:
+                    total_price = product.price * item.quantity
+                    subtotal += total_price
+                    items.append({
+                        "product_id": item.product_id,
+                        "name": product.name,
+                        "price": product.price,
+                        "image": getattr(product, "image", ""),
+                        "quantity": item.quantity,
+                        "total_price": total_price
+                    })
+
+        cart.items = items
+
+        return {
+            "id": cart.id,
+            "user_id": user_id,
+            "items": items,
+            "subtotal": subtotal,
+            "delivery_fee": 5.0,
+            "total": subtotal + 5.0
+        }
+
+
+
 class CartItemRecord:
 
     def __init__(self):
@@ -105,10 +144,14 @@ class CartItemRecord:
             print('O sistema não conseguiu gravar o arquivo (Item do Carrinho)!')
 
     def add_item(self, order_id, product_id, quantity):
-        new_item = OrderItem(order_id, product_id, quantity)
-        self.__all_items.append(new_item)
+        existing_item = self.get_cart_item(order_id, product_id)
+        if existing_item:
+            existing_item.quantity += quantity
+        else:
+            new_item = OrderItem(order_id, product_id, quantity)
+            self.__all_items.append(new_item)
         self.__write()
-        return new_item
+
     
     def del_item(self, order_id, product_id):
         item = self.get_cart_item(order_id, product_id)

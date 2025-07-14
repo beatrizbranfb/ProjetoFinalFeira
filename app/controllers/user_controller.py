@@ -1,6 +1,11 @@
 from app.controllers.userRecord import UserRecord
+from app.controllers.cartRecord import CartRecord
+import json
+import os
+from datetime import datetime
 from bottle import request, redirect, route
 from app.controllers.application import app_renderer
+from datetime import datetime
 
 # Decorador para rotas que precisem de login
 def login_required(func):
@@ -24,6 +29,7 @@ class UserController:
 
     def __init__(self):
         self.__users = UserRecord()
+        self.__orders = CartRecord()
         self.pages = {
             'login': self.login,
             'register': self.register,
@@ -96,12 +102,74 @@ class UserController:
     @route('/admin')
     @admin_required
     def admin_dashboard(self):
-        return app_renderer.render_page('administrador_dashboard.html')
-    
+        all_orders = self.__orders.get_all_orders()
+        all_users = self.__users.getUserAccount()
+        user_map = {user.id: user.username for user in all_users}
+        
+        total_sales = sum(
+            order.total_amount for order in all_orders if order.status == "completed"
+        )
+
+        pending_orders_count = sum(
+            1 for order in all_orders if order.status == "pending"
+        )
+
+        new_clients_count = sum(
+            1 for user in all_users if user.id > len(all_users) - 5
+        )
+
+        recent_sales_orders = sorted(all_orders, key=lambda o: o.order_date, reverse=True)[:5]
+        recent_sales = [
+            {
+                'id': order.id,
+                'customer_name': user_map.get(order.user_id, 'Desconhecido'),
+                'date': order.order_date.strftime('%d/%m/%Y'),
+                'value': order.total_amount,
+                'status': order.status
+            }
+            for order in recent_sales_orders
+        ]
+
+        return app_renderer.render_page(
+            "administrador_dashboard.html",
+            total_sales=total_sales,
+            new_clients_count=new_clients_count,
+            pending_orders_count=pending_orders_count,
+            recent_sales=recent_sales
+        )
+
     @route('/admin_clientes')
     @admin_required
     def admin_clientes(self):
-        return app_renderer.render_page('administrador_clientes.html')
+        all_users = self.__users.getUserAccount()
+        all_orders = self.__orders.get_all_orders()
+
+        user_map = {user.id: user for user in all_users}
+
+        clients = []
+        for order in all_orders:
+            user = user_map.get(order.user_id)
+            if not user:
+                continue
+
+            days_pending = "?"
+            if order.status == 'pending':
+                days_pending = (datetime.now() - order.order_date).days
+
+            clients.append({
+                "username": user.username,
+                "email": user.email,
+                "phone": getattr(user, "phone", "(61) 9XXXX-XXXX"),
+                "address": getattr(user, "address", "Endereço não informado"),
+                "order_id": order.id,
+                "order_date": order.order_date.strftime("%d/%m/%Y"),
+                "order_value": order.total_amount,
+                "status": order.status,
+                "days_pending": days_pending
+            })
+
+        return app_renderer.render_page("administrador_clientes.html", clients=clients)
+
 
     @route('/admin_stock')
     @admin_required

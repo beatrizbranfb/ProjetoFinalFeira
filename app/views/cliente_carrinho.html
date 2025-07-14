@@ -57,57 +57,54 @@
         
         <div class="cart-container">
           <div class="cart-items">
-            <div class="cart-item">
-              <img src="" alt="Maçã" class="cart-item-image">
-              <div class="cart-item-details">
-                <h3 class="cart-item-name">Maçã</h3>
-                <p class="cart-item-price">R$ 4,99/kg</p>
-                <div class="cart-item-actions">
-                  <div class="quantity-control">
-                    <button class="quantity-btn minus">-</button>
-                    <input type="text" class="quantity-input" value="2">
-                    <button class="quantity-btn plus">+</button>
+            % if cart['items']:
+              % for item in cart['items']:
+              <div class="cart-item">
+                <img src="{{item['image'] or ''}}" alt="{{item['name']}}" class="cart-item-image">
+                <div class="cart-item-details">
+                  <h3 class="cart-item-name">{{item['name']}}</h3>
+                  <p class="cart-item-price">R$ {{'%.2f' % item['price']}}/kg</p>
+                  <div class="cart-item-actions">
+                    <form action="/cart/update/{{item['product_id']}}" method="post" style="display:inline-block;">
+                      <div class="quantity-control">
+                        <button class="quantity-btn minus" type="submit" name="quantity" value="{{item['quantity'] - 1}}">-</button>
+                        <input type="text" class="quantity-input" name="quantity" value="{{item['quantity']}}">
+                        <button class="quantity-btn plus" type="submit" name="quantity" value="{{item['quantity'] + 1}}">+</button>
+                      </div>
+                    </form>
+                    <form action="/cart/remove/{{item['product_id']}}" method="post" style="display:inline-block;">
+                      <button class="btn btn-outline">Remover</button>
+                    </form>
                   </div>
-                  <button class="btn btn-outline">Remover</button>
                 </div>
               </div>
-            </div>
-            
-            <div class="cart-item">
-              <img src="" alt="Banana" class="cart-item-image">
-              <div class="cart-item-details">
-                <h3 class="cart-item-name">Banana Prata</h3>
-                <p class="cart-item-price">R$ 3,49/kg</p>
-                <div class="cart-item-actions">
-                  <div class="quantity-control">
-                    <button class="quantity-btn minus">-</button>
-                    <input type="text" class="quantity-input" value="1">
-                    <button class="quantity-btn plus">+</button>
-                  </div>
-                  <button class="btn btn-outline">Remover</button>
-                </div>
-              </div>
-            </div>
+              % end
+            % else:
+              <p>Seu carrinho está vazio.</p>
+            % end
           </div>
           
           <div class="cart-summary">
             <div class="summary-row">
               <span>Subtotal</span>
-              <span>R$ 13,47</span>
+              <span>R$ {{'%.2f' % cart['subtotal']}}</span>
             </div>
             <div class="summary-row">
               <span>Taxa de entrega</span>
-              <span>R$ 5,00</span>
+              <span>R$ {{'%.2f' % cart['delivery_fee']}}</span>
             </div>
             <div class="summary-row summary-total">
               <span>Total</span>
-              <span>R$ 18,47</span>
+              <span>R$ {{'%.2f' % cart['total']}}</span>
             </div>
             
-            <button class="btn btn-primary" style="width: 100%; margin-top: 1.5rem;">
-              <i class="fas fa-credit-card"></i> Finalizar Compra
-            </button>
+            <form action="/cart/checkout" method="post">
+              <button class="btn btn-primary" style="width: 100%; margin-top: 1.5rem;">
+                <i class="fas fa-credit-card"></i> Finalizar Compra
+              </button>
+            </form>
           </div>
+
         </div>
       </div>
     </div>
