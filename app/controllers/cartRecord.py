@@ -5,8 +5,9 @@ from app.controllers.productRecord import ProductRecord
 
 class CartRecord:
 
-    def __init__(self):
+    def __init__(self, cart_item_record=None):
         self.__all_orders = []
+        self.cart_item_record = CartItemRecord()
         self.read()
 
     def read(self):
@@ -66,7 +67,7 @@ class CartRecord:
         product_record = ProductRecord()
 
         for order in self.__all_orders:
-            if order.user_id == user_id:
+            if order.user_id == user_id and order.status == 'completed':
 
                 augmented_items = []
                 for item_obj in order.items:
@@ -110,37 +111,38 @@ class CartRecord:
         if not cart:
             return None
 
-        cart_item_record = CartItemRecord()  
-        product_record = ProductRecord()
+        items = self.cart_item_record.get_items_by_order_id(cart.id)
 
-        items = []
+        enriched_items = []
         subtotal = 0.0
 
-        for item in cart_item_record.get_all_items():
-            if item.order_id == cart.id:
-                product = product_record.get_product_by_id(item.product_id)
-                if product:
-                    total_price = product.price * item.quantity
-                    subtotal += total_price
-                    items.append({
-                        "product_id": item.product_id,
-                        "name": product.name,
-                        "price": product.price,
-                        "image": getattr(product, "image", ""),
-                        "quantity": item.quantity,
-                        "total_price": total_price
-                    })
+        product_record = ProductRecord()
 
-        cart.items = items
+        for item in items:
+            product = ProductRecord().get_product_by_id(item.product_id)
+            if product:
+                enriched_item = {
+                    'product_id': item.product_id,
+                    'name': product.name,
+                    'price': product.price,
+                    'quantity': item.quantity,
+                    'total_price': product.price * item.quantity,
+                    'image': product.image if hasattr(product, 'image') else ''
+                }
+                subtotal += enriched_item['total_price']
+                enriched_items.append(enriched_item)
+
+        delivery_fee = 5.00 
+        total = subtotal + delivery_fee
 
         return {
-            "id": cart.id,
-            "user_id": user_id,
-            "items": items,
-            "subtotal": subtotal,
-            "delivery_fee": 5.0,
-            "total": subtotal + 5.0
+            'id': cart.id,
+            'items': enriched_items,
+            'subtotal': subtotal,
+            'delivery_fee': delivery_fee,
+            'total': total
         }
+
 
 
 
@@ -206,3 +208,6 @@ class CartItemRecord:
             if item.order_id == order_id and item.product_id == product_id:
                 return item
         return None
+    
+    def get_items_by_order_id(self, order_id):
+        return [item for item in self.__all_items if item.order_id == order_id]

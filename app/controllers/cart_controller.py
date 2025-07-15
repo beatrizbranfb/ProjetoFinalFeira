@@ -7,8 +7,8 @@ from app.controllers.application import app_renderer
 
 class CartController:
     def __init__(self):
-        self.__cart_record = CartRecord()
         self.__cart_item_record = CartItemRecord()
+        self.__cart_record = CartRecord(cart_item_record=self.__cart_item_record)
         self.pages = {
             'view_cart': self.view_cart,
             'view_orders': self.view_orders,
@@ -95,6 +95,8 @@ class CartController:
 
         try:
             self.__cart_record.update_order_status(cart.id, status='completed')
-            return app_renderer.render_page('cliente_carrinho.html', order=cart_data)
+            self.__cart_record.add_order(user_id) 
+            return redirect('/orders')  
         except ValueError as e:
             return app_renderer.render_page('cliente_carrinho.html', cart=cart_data, error=str(e))
+
