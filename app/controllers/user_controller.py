@@ -37,7 +37,6 @@ class UserController:
             'profile': self.profile,
             'admin_dashboard': self.admin_dashboard,
             'admin_clientes': self.admin_clientes,
-            'admin_stock': self.admin_stock,
             'acesso_neg': self.acesso_neg
         }
 
@@ -169,12 +168,6 @@ class UserController:
             })
 
         return app_renderer.render_page("administrador_clientes.html", clients=clients)
-
-
-    @route('/admin_stock')
-    @admin_required
-    def admin_stock(self):
-        return app_renderer.render_page('administrador_estoque.html')
 
     @route('/acesso_neg')
     def acesso_neg(self):

@@ -82,8 +82,8 @@
           <div class="order-items-list">
             % for item in order.items:
               <div class="order-item">
-                <span>{{item.product.name}} ({{item.quantity}}kg)</span>
-                <span>R$ {{'%.2f' % (item.quantity * item.product.price)}}</span>
+                <span>{{item['name']}} ({{item['quantity']}}kg)</span>
+                <span>R$ {{'%.2f' % item['total_price']}}</span>
               </div>
             % end
           </div>

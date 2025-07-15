@@ -27,7 +27,6 @@ class CartController:
             self.__cart_record.add_order(user_id)
             cart = self.__cart_record.get_user_cart(user_id)
 
-
         return app_renderer.render_page('cliente_carrinho.html', cart=cart)
     
     @route('/orders')
@@ -55,7 +54,6 @@ class CartController:
         except ValueError as e:
             return app_renderer.render_page('cliente_carrinho.html', product=ProductRecord.get_product_by_id(product_id), error=str(e))
 
-
     @route('/cart/remove/<product_id:int>', method=['POST'])
     @login_required
     def remove_from_cart(self, product_id):
@@ -64,7 +62,6 @@ class CartController:
         if cart:
             self.__cart_item_record.del_item(cart.id, product_id)
         return redirect('/cart')
-
 
     @route('/cart/update/<product_id:int>', method=['POST'])
     @login_required
@@ -85,7 +82,6 @@ class CartController:
         except ValueError as e:
             return app_renderer.render_page('cliente_carrinho.html', cart=self.__cart_record.get_user_cart(user_id), error=str(e))
 
-
     @route('/cart/checkout', method=['POST'])
     @login_required
     def checkout(self):
@@ -102,4 +98,3 @@ class CartController:
             return app_renderer.render_page('cliente_carrinho.html', order=cart_data)
         except ValueError as e:
             return app_renderer.render_page('cliente_carrinho.html', cart=cart_data, error=str(e))
-

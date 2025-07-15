@@ -74,10 +74,9 @@ app.route('/cart/checkout', method='POST', callback=cart_ctl.checkout)
 app.route('/profile', callback=user_ctl.profile)
 app.route('/orders', callback=cart_ctl.view_orders)
 
-app.route('/administrador', callback=user_ctl.admin_dashboard)
+app.route('/admin', callback=user_ctl.admin_dashboard)
 app.route('/admin_clientes', callback=user_ctl.admin_clientes)
 app.route('/acesso_neg', callback=user_ctl.acesso_neg)
-app.route('/admin_stock', callback=user_ctl.admin_stock)
 
 app.route('/stock', callback=product_ctl.view_stock)
 app.route('/stock/add', method='POST', callback=product_ctl.add_product)

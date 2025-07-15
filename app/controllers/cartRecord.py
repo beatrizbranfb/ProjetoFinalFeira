@@ -42,8 +42,14 @@ class CartRecord:
     def get_tot_amount(self, order_id):
         order = self.get_order_by_id(order_id)
         if order:
-            order.total_amount = sum(item.quantity * item.product.price for item in order.items)
-            return order.total_amount
+            product_record = ProductRecord()
+            total_sum = 0.0
+            for item_obj in order.items:
+                product = product_record.get_product_by_id(item_obj.product_id)
+                if product:
+                    total_sum += item_obj.quantity * product.price
+            order.total_amount = total_sum
+            return total_sum
         return 0.0
 
     def get_all_orders(self):
@@ -56,7 +62,25 @@ class CartRecord:
         return None
 
     def get_user_orders(self, user_id):
-        user_orders = [order for order in self.__all_orders if order.user_id == user_id]
+        user_orders = []
+        product_record = ProductRecord()
+
+        for order in self.__all_orders:
+            if order.user_id == user_id:
+
+                augmented_items = []
+                for item_obj in order.items:
+                    product = product_record.get_product_by_id(item_obj.product_id)
+                    if product:
+                        augmented_items.append({
+                            "product_id": item_obj.product_id,
+                            "name": product.name,
+                            "price": product.price,
+                            "quantity": item_obj.quantity
+                        })
+                order.total_amount = self.get_tot_amount(order.id)
+                order.items = augmented_items
+                user_orders.append(order)
         return user_orders
     
     def get_order_by_id(self, order_id):
