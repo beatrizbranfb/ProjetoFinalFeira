@@ -5,8 +5,8 @@ from app.controllers.application import app_renderer
 
 class ProductController:
 
-    def __init__(self):
-        self.__products = ProductRecord()
+    def __init__(self, app):
+        self.__products = ProductRecord(app_renderer=app)
         self.__user_controller = UserController()
         self.pages = {
             'list_products': self.list_products,

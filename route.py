@@ -2,10 +2,12 @@ from bottle import Bottle, run, TEMPLATE_PATH, request, response, static_file
 import os
 import uuid
 import sys
-from app.controllers.application import Application
+from app.controllers.application import Application, app_renderer
 from app.controllers.user_controller import UserController
 from app.controllers.product_controller import ProductController
 from app.controllers.cart_controller import CartController
+import eventlet
+import eventlet.wsgi
 
 
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), 'app'))
@@ -14,15 +16,14 @@ APP_ROOT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'app')
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 TEMPLATE_PATH.append(os.path.join(APP_ROOT_DIR, 'views'))
 
-app = Bottle()
-ctl = Application()
+ctl = app_renderer
 user_ctl = UserController()
-product_ctl = ProductController()
-cart_ctl = CartController()
+product_ctl = ProductController(app = app_renderer)
+cart_ctl = CartController(app = app_renderer)
 
 sessions = {}
 
-@app.hook('before_request')
+@app_renderer.hook('before_request')
 def setup_session():
     session_id = request.get_cookie("session_id")
     if session_id and session_id in sessions:
@@ -33,7 +34,7 @@ def setup_session():
         sessions[session_id] = request.session
         response.set_cookie("session_id", session_id, path='/', httponly=True)
 
-@app.hook('after_request')
+@app_renderer.hook('after_request')
 def teardown_session():
     session_id = request.get_cookie("session_id")
     if session_id:
@@ -41,45 +42,45 @@ def teardown_session():
 
 #---------------------------------------------------------------------------------------
 #Rotas
-@app.route('/static/<filepath:path>')
+@app_renderer.route('/static/<filepath:path>')
 def serve_static(filepath):
     return static_file(filepath, root='./app/static')
         
-@app.route('/')
+@app_renderer.route('/')
 def helper(info=None):
     return ctl.render('helper')
 
 #--------------------------------------------------------------------------------------
 
-app.route('/', callback=ctl.helper) 
-app.route('/login', method=['GET', 'POST'], callback=user_ctl.login)
-app.route('/register', method=['GET', 'POST'], callback=user_ctl.register)
-app.route('/logout', callback=user_ctl.logout)
+app_renderer.route('/', callback=ctl.helper) 
+app_renderer.route('/login', method=['GET', 'POST'], callback=user_ctl.login)
+app_renderer.route('/register', method=['GET', 'POST'], callback=user_ctl.register)
+app_renderer.route('/logout', callback=user_ctl.logout)
 
-app.route('/products', callback=product_ctl.list_products)
-app.route('/products/<product_id:int>', callback=product_ctl.product_details)
-app.route('/products/add_stock/<product_id:int>', method='POST', callback=product_ctl.add_stock)
-app.route('/products/remove_stock/<product_id:int>', method='POST', callback=product_ctl.remove_stock)
-app.route('/products/add', method=['GET', 'POST'], callback=product_ctl.add_product)
-app.route('/products/add/<product_id:int>', method='POST', callback=product_ctl.add_product)
-app.route('/products/edit/<product_id:int>', method=['GET', 'POST'], callback=product_ctl.edit_product)
-app.route('/products/delete/<product_id:int>', method='POST', callback=product_ctl.delete_product)
+app_renderer.route('/products', callback=product_ctl.list_products)
+app_renderer.route('/products/<product_id:int>', callback=product_ctl.product_details)
+app_renderer.route('/products/add_stock/<product_id:int>', method='POST', callback=product_ctl.add_stock)
+app_renderer.route('/products/remove_stock/<product_id:int>', method='POST', callback=product_ctl.remove_stock)
+app_renderer.route('/products/add', method=['GET', 'POST'], callback=product_ctl.add_product)
+app_renderer.route('/products/add/<product_id:int>', method='POST', callback=product_ctl.add_product)
+app_renderer.route('/products/edit/<product_id:int>', method=['GET', 'POST'], callback=product_ctl.edit_product)
+app_renderer.route('/products/delete/<product_id:int>', method='POST', callback=product_ctl.delete_product)
 
-app.route('/cart', callback=cart_ctl.view_cart)
-app.route('/cart/add/<product_id:int>', method='POST', callback=cart_ctl.add_to_cart)
-app.route('/cart/remove/<product_id:int>', method='POST', callback=cart_ctl.remove_from_cart)
-app.route('/cart/update/<product_id:int>', method='POST', callback=cart_ctl.update_cart_item)
-app.route('/cart/checkout', method='POST', callback=cart_ctl.checkout)
+app_renderer.route('/cart', callback=cart_ctl.view_cart)
+app_renderer.route('/cart/add/<product_id:int>', method='POST', callback=cart_ctl.add_to_cart)
+app_renderer.route('/cart/remove/<product_id:int>', method='POST', callback=cart_ctl.remove_from_cart)
+app_renderer.route('/cart/update/<product_id:int>', method='POST', callback=cart_ctl.update_cart_item)
+app_renderer.route('/cart/checkout', method='POST', callback=cart_ctl.checkout)
 
-app.route('/profile', callback=user_ctl.profile)
-app.route('/orders', callback=cart_ctl.view_orders)
+app_renderer.route('/profile', callback=user_ctl.profile)
+app_renderer.route('/orders', callback=cart_ctl.view_orders)
 
-app.route('/admin', callback=user_ctl.admin_dashboard)
-app.route('/admin_clientes', callback=user_ctl.admin_clientes)
-app.route('/acesso_neg', callback=user_ctl.acesso_neg)
+app_renderer.route('/admin', callback=user_ctl.admin_dashboard)
+app_renderer.route('/admin_clientes', callback=user_ctl.admin_clientes)
+app_renderer.route('/acesso_neg', callback=user_ctl.acesso_neg)
 
-app.route('/stock', callback=product_ctl.view_stock)
-app.route('/stock/add', method='POST', callback=product_ctl.add_product)
+app_renderer.route('/stock', callback=product_ctl.view_stock)
+app_renderer.route('/stock/add', method='POST', callback=product_ctl.add_product)
 
 if __name__ == '__main__':
-    run(app, host='localhost', port=8080, debug=True)
+    eventlet.wsgi.server(eventlet.listen(('localhost', 8080)), app_renderer.wsgi_app)
