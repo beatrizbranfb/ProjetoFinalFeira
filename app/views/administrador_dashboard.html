@@ -6,6 +6,7 @@
   <title>Painel do Administrador</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <link rel="stylesheet" type="text/css" href="../static/css/adm_style.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.0/socket.io.min.js"></script>
 </head>
 <body> 
   <header>
@@ -124,5 +125,57 @@
       </div>
     </div>
   </main>
+    <script>
+    const socket = io('http://localhost:8080');
+
+    socket.on('connect', () => {
+      console.log('Connected to WebSocket server!');
+    });
+
+    socket.on('order_status_update', (data) => {
+      console.log('Order status update received:', data);
+      updateOrderDisplay(data.orders);
+    });
+
+    socket.on('disconnect', () => {
+      console.log('Disconnected from WebSocket server.');
+    });
+
+    function updateOrderDisplay(orders) {
+      const orderContainer = document.querySelector('.tab-content.active');
+      if (orderContainer) {
+        const ordersListContainer = document.querySelector('.orders-list-container');
+        if (ordersListContainer) {
+          ordersListContainer.innerHTML = '';
+          orders.forEach(order => {
+            const orderCard = document.createElement('div');
+            orderCard.className = 'order-card';
+            orderCard.innerHTML = `
+              <div class="order-header">
+                <div>
+                  <span class="order-id">Pedido #${order.id}</span>
+                  <span class="order-status status-${order.status}">${order.status.charAt(0).toUpperCase() + order.status.slice(1)}</span>
+                </div>
+                <span class="order-date">${new Date(order.order_date).toLocaleDateString('pt-BR')}</span>
+              </div>
+              <div class="order-items-list">
+                ${order.items.map(item => `
+                  <div class="order-item">
+                    <span>${item.name} (${item.quantity}kg)</span>
+                    <span>R$ ${item.total_price.toFixed(2)}</span>
+                  </div>
+                `).join('')}
+              </div>
+              <div class="summary-row order-total">
+                <span>Total</span>
+                <span>R$ ${order.total_amount.toFixed(2)}</span>
+              </div>
+            `;
+            ordersListContainer.appendChild(orderCard);
+          });
+        }
+      }
+    }
+</script>
 </body>
 </html>

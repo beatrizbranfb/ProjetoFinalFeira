@@ -6,5 +6,13 @@
         "total_amount": 0.0,
         "status": "pending",
         "items": []
+    },
+    {
+        "id": 2,
+        "user_id": 4,
+        "order_date": "2025-07-19T17:10:28.200630",
+        "total_amount": 0.0,
+        "status": "pending",
+        "items": []
     }
 ]
