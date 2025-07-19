@@ -15,7 +15,6 @@ class ProductRecord():
                 self.__all_products = []
                 for p_data in product_data:
                     product = Product(**p_data)
-                    # Ensure every product has an image attribute for consistent rendering.
                     if not hasattr(product, 'image'):
                         product.image = '/static/images/default_product.png'
                     self.__all_products.append(product)

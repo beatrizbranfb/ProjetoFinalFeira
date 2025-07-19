@@ -36,7 +36,7 @@
           </a>
         </li>
         <li class="sidebar-item">
-          <a href="/admin_stock" class="sidebar-link active">
+          <a href="/stock" class="sidebar-link active">
             <i class="fas fa-boxes"></i>
             <span>Estoque</span>
           </a>
@@ -62,13 +62,16 @@
     </div>
           <div class="filter-group">
             <select name="category" class="filter-select" onchange="this.form.submit()">
-              <option value="" % if not selected_category else %>Todas as categorias</option>
-              <option value="Frutas tropicais" % if selected_category == 'Frutas tropicais' else %>Frutas tropicais</option>
-              <option value="Frutas cítricas" % if selected_category == 'Frutas cítricas' else %>Frutas cítricas</option>
-              <option value="Frutas vermelhas" % if selected_category == 'Frutas vermelhas' else %>Frutas vermelhas</option>
-              <option value="Outras" % if selected_category == 'Outras' else %>Outras</option>
+            % if not selected_category:
+              <option value="" selected>Todas as categorias</option>
+            % else:
+              <option value="">Todas as categorias</option>
+            % end
+            <option value="Frutas tropicais" % if selected_category == 'Frutas tropicais' else %>Frutas tropicais</option>
+            <option value="Frutas cítricas" % if selected_category == 'Frutas cítricas' else %>Frutas cítricas</option>
+            <option value="Frutas vermelhas" % if selected_category == 'Frutas vermelhas' else %>Frutas vermelhas</option>
+            <option value="Outras" % if selected_category == 'Outras' else %>Outras</option>
             </select>
-
             <select name="sort" class="filter-select" onchange="this.form.submit()">
               <option value="">Ordenar por</option>
               <option value="name_asc" % if sort_option == 'name_asc' else %>Nome (A-Z)</option>

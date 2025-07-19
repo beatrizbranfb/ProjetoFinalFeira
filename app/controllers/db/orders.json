@@ -4,7 +4,7 @@
         "user_id": 1,
         "order_date": "2025-07-15T11:11:25.106828",
         "total_amount": 0.0,
-        "status": "pending",
+        "status": "completed",
         "items": []
     }
 ]

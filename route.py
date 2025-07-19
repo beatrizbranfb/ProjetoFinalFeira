@@ -76,8 +76,10 @@ app.route('/orders', callback=cart_ctl.view_orders)
 
 app.route('/admin', callback=user_ctl.admin_dashboard)
 app.route('/admin_clientes', callback=user_ctl.admin_clientes)
+@app.post('/admin/confirmar_pedido/<order_id:int>')
+def confirmar_pedido_admin(order_id):
+    return cart_ctl.confirmar_pedido_admin(order_id)
 app.route('/acesso_neg', callback=user_ctl.acesso_neg)
-
 app.route('/stock', callback=product_ctl.view_stock)
 app.route('/stock/add', method='POST', callback=product_ctl.add_product)
 

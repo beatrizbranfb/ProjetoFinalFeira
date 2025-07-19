@@ -1,1 +1,1 @@
-[{"id": 2, "name": "Banana", "price": 1.99, "stock": 14.0, "description": "Frutas tropicais"}, {"id": 1, "name": "Ma\u00e7\u00e3", "price": 2.8, "stock": 80.0, "description": "Frutas vermelhas"}]
+[{"id": 2, "name": "Banana", "price": 1.99, "stock": 20.0, "description": "Frutas tropicais", "image": "/static/images/default_product.png"}, {"id": 1, "name": "Ma\u00e7\u00e3", "price": 2.8, "stock": 80.0, "description": "Frutas vermelhas", "image": "/static/images/default_product.png"}]

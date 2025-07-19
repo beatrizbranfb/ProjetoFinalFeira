@@ -14,7 +14,6 @@
       <span class="brand-name">Painel Admin</span>
     </div>
     <nav>
-      <a href="#" class="nav-link"><i class="fas fa-bell"></i></a>
       <a href="#" class="nav-link"><i class="fas fa-user"></i> Admin</a>
     </nav>
   </header>
@@ -35,7 +34,7 @@
           </a>
         </li>
         <li class="sidebar-item">
-          <a href="/admin_stock" class="sidebar-link">
+          <a href="/stock" class="sidebar-link">
             <i class="fas fa-boxes"></i>
             <span>Estoque</span>
           </a>
@@ -46,10 +45,6 @@
     <div class="content">
       <div class="page-header">
         <h1 class="page-title">Clientes com Pedidos Pendentes</h1>
-        <button class="btn btn-warning">
-          <i class="fas fa-file-export"></i>
-          <span>Exportar Lista</span>
-        </button>
       </div>
       
       <div class="search-filter">
@@ -112,8 +107,12 @@
             </td>
             <td>{{client["days_pending"]}} dias</td>
             <td>
-              <button class="action-btn" title="Detalhes"><i class="fas fa-eye"></i></button>
-              <button class="action-btn" title="Marcar como entregue"><i class="fas fa-check-circle"></i></button>
+              <form action="/admin/confirmar_pedido/{{client['order_id']}}" method="post" style="display: inline;">
+                <button class="action-btn" title="Marcar como entregue" onclick="return confirm('Confirmar entrega do pedido?')">
+                  <i class="fas fa-check-circle"></i>
+                </button>
+              </form>
+
             </td>
           </tr>
           % end

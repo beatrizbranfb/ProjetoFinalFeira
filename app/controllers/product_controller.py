@@ -105,7 +105,7 @@ class ProductController:
                 return app_renderer.render_page('error_400', message="Preço e quantidade devem ser números.")
             
             product = self.__products.update_product(
-                product_id=product.id,
+            product_id=product.id,
             description=product.description,
             price=product.price,
             stock=product.stock
@@ -138,3 +138,5 @@ class ProductController:
             new_stock = max(product.stock - quantity, 0)
             self.__products.update_product(product_id=product.id, name=product.name, description=product.description, price=product.price, stock=new_stock)
         return redirect('/stock')
+    
+    

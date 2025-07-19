@@ -1,4 +1,4 @@
-from bottle import route, request, redirect
+from bottle import route, request, redirect, post
 from app.controllers.cartRecord import CartRecord, CartItemRecord
 from app.controllers.productRecord import ProductRecord
 from app.controllers.user_controller import login_required
@@ -99,4 +99,8 @@ class CartController:
             return redirect('/orders')  
         except ValueError as e:
             return app_renderer.render_page('cliente_carrinho.html', cart=cart_data, error=str(e))
+
+    def confirmar_pedido_admin(self, order_id):
+        self.__cart_record.update_order_status(order_id, 'completed')
+        return redirect('/admin_clientes')
 
