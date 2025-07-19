@@ -42,17 +42,24 @@ class CartController:
         user_id = request.session.get('user_id')
         quantity = int(request.forms.get('quantity', 1))
 
+        print(f"\n--- DEBUG: Chamada para add_to_cart ---")
+        print(f"  User ID: {user_id}, Product ID: {product_id}, Quantity: {quantity}")
+
         cart = self.__cart_record.get_active_cart_by_user_id(user_id)
         if not cart:
+            print("  Nenhum carrinho ativo encontrado. Criando um novo.")
             cart = self.__cart_record.add_order(user_id)
+        print(f"  Carrinho ativo usado para adicionar item: ID {cart.id}, Status: {cart.status}")
 
         try:
             if quantity <= 0:
                 raise ValueError("Quantidade deve ser maior que zero.")
             self.__cart_item_record.add_item(cart.id, product_id, quantity)
+            print(f"  Item adicionado com sucesso ao carrinho ID {cart.id}.")
             return redirect('/cart')
         except ValueError as e:
-            return app_renderer.render_page('cliente_carrinho.html', product=ProductRecord.get_product_by_id(product_id), error=str(e))
+            print(f"  ERRO ao adicionar item ao carrinho: {e}")
+            return redirect('/cart')
 
     @route('/cart/remove/<product_id:int>', method=['POST'])
     @login_required
@@ -95,8 +102,8 @@ class CartController:
 
         try:
             self.__cart_record.update_order_status(cart.id, status='completed')
-            self.__cart_record.add_order(user_id) 
-            return redirect('/orders')  
+            self.__cart_record.add_order(user_id)
+            return redirect('/orders')
         except ValueError as e:
             return app_renderer.render_page('cliente_carrinho.html', cart=cart_data, error=str(e))
 
