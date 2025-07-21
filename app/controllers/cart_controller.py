@@ -33,8 +33,14 @@ class CartController:
     @login_required
     def view_orders(self):
         user_id = request.session.get('user_id')
-        orders = self.__cart_record.get_user_orders(user_id)
-        return app_renderer.render_page('cliente_pedidos.html', orders=orders)
+        user_orders = self.__cart_record.get_user_orders(user_id)
+
+
+
+        for order in user_orders:
+            order.total_amount = sum(item['total_price'] for item in order.items)
+
+        return app_renderer.render_page("cliente_pedidos.html", orders=user_orders)
 
     @route('/cart/add/<product_id:int>', method=['POST'])
     @login_required
@@ -107,6 +113,7 @@ class CartController:
         except ValueError as e:
             return app_renderer.render_page('cliente_carrinho.html', cart=cart_data, error=str(e))
 
+    @post('/admin/confirmar_pedido/<order_id:int>', method = 'POST')
     def confirmar_pedido_admin(self, order_id):
         self.__cart_record.update_order_status(order_id, 'completed')
         return redirect('/admin_clientes')

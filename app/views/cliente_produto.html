@@ -17,7 +17,6 @@
       <a href="/cart" class="nav-link">
         <i class="fas fa-shopping-cart"></i>
         <span>Carrinho</span>
-        <span class="cart-count">0</span>
       </a>
       <a href="/profile" class="nav-link">
         <i class="fas fa-user"></i>
@@ -56,20 +55,22 @@
         </div>
         
         <div class="search-filter">
-          <div class="search-box">
-            <i class="fas fa-search"></i>
-            <input type="text" placeholder="Pesquisar produtos...">
-          </div>
+        <form method="get" id="searchForm" class="search-box">
+          <i class="fas fa-search"></i>
+          <input type="text" name="q" placeholder="Pesquisar produtos..." value="{{request.query.q or ''}}">
+        </form>
+        <form method="get" id="filterForm">
+          <input type="hidden" name="q" value="{{request.query.q or ''}}">
           <div class="filter-options">
-            <select class="filter-select" >
-              <option value="name-asc">Nome (A-Z)</option>
-              <option value="name-desc">Nome (Z-A)</option>
-              <option value="price-asc">Preço (menor)</option>
-              <option value="price-desc">Preço (maior)</option>
+            <select class="filter-select" name="sort" onchange="document.getElementById('filterForm').submit()">
+              <option value="name-asc" % if request.query.sort == 'name-asc' else %>Nome (A-Z)</option>
+              <option value="name-desc" % if request.query.sort == 'name-desc' else %>Nome (Z-A)</option>
+              <option value="price-asc" % if request.query.sort == 'price-asc' else %>Preço (menor)</option>
+              <option value="price-desc" % if request.query.sort == 'price-desc' else %>Preço (maior)</option>
             </select>
           </div>
+        </form>
         </div>
-        
         <div class="products-grid">
           % for product in products:
           <div class="product-card">

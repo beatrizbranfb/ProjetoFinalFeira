@@ -152,6 +152,9 @@ class CartRecord:
         print(f"  Dados finais do carrinho para renderização: {cart_data}")
         print(f"--- FIM DEBUG ---\n")
         return cart_data
+    
+    def get_all_orders(self):
+        return self.read() or []
 
 
 

@@ -110,6 +110,16 @@ class UserRecord():
         if session_id in self.__authenticated_users:
             del self.__authenticated_users[session_id]
 
-    def update_users_list(self):
-        self.read('user_accounts')
-        self.read('admin_accounts')
+    def update_users_list(self, updated_user):
+        for i, user in enumerate(self.users):
+            if user.email == updated_user.email:
+                self.users[i] = updated_user
+                self.__write('user_accounts')
+                return
+        for i, admin in enumerate(self.admins):
+            if admin.email == updated_user.email:
+                self.admins[i] = updated_user
+                self.__write('admin_accounts')
+                return
+
+

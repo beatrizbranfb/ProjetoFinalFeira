@@ -83,5 +83,9 @@ app.route('/acesso_neg', callback=user_ctl.acesso_neg)
 app.route('/stock', callback=product_ctl.view_stock)
 app.route('/stock/add', method='POST', callback=product_ctl.add_product)
 
+app.route('/account/update', method='POST', callback=user_ctl.update_user)
+
+run(app, host='localhost')
+
 if __name__ == '__main__':
     run(app, host='localhost', port=8080, debug=True)

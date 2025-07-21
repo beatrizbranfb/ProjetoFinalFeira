@@ -3,7 +3,7 @@ from app.controllers.cartRecord import CartRecord
 import json
 import os
 from datetime import datetime
-from bottle import request, redirect, route
+from bottle import request, redirect, route, post, template
 from app.controllers.application import app_renderer
 from datetime import datetime
 
@@ -172,5 +172,78 @@ class UserController:
     @route('/acesso_neg')
     def acesso_neg(self):
         return app_renderer.render_page('acesso_neg.html')
+
+    @admin_required
+    def update_user(self):
+        user_id = request.get_cookie("user_id") 
+        name = request.forms.get("name")
+        email = request.forms.get("email")
+        phone = request.forms.get("phone")
+        address = request.forms.get("address")
+
+        user_record = UserRecord()
+        user = user_record.getUserByEmail(email)
+        if user:
+            user.name = name
+            user.email = email
+            user.phone = phone
+            user.address = address
+            user_record.update_users_list()
+
+        redirect("/account")
+
+    @route('/admin_clientes')
+    @admin_required
+    def admin_clientes(self):
+        cart_record = CartRecord()
+        user_record = UserRecord()
+
+        all_orders = cart_record.get_all_orders()  
+
+        query = request.query.q.strip().lower() if request.query.q else ''
+        status_filter = request.query.status
+        sort = request.query.sort
+
+        clients = []
+
+        for order in all_orders:
+            if order.status in ['pending', 'delayed', 'processing']:
+                user = user_record.get_user_by_id(order.user_id)
+                if user:
+                    client_data = {
+                        'username': user.username,
+                        'email': user.email,
+                        'phone': user.phone,
+                        'address': user.address,
+                        'order_id': order.id,
+                        'order_date': order.date,
+                        'order_value': order.total,
+                        'status': order.status,
+                        'days_pending': (datetime.now() - datetime.strptime(order.date, '%Y-%m-%d')).days
+                    }
+
+                    if query and query not in client_data["username"].lower():
+                        continue
+
+                    if status_filter and client_data["status"] != status_filter:
+                        continue
+
+                    clients.append(client_data)
+
+        if sort == "date":
+            clients.sort(key=lambda x: x["order_date"])
+        elif sort == "name":
+            clients.sort(key=lambda x: x["username"].lower())
+        elif sort == "value":
+            clients.sort(key=lambda x: x["order_value"], reverse=True)
+
+        return app_renderer.render_page(
+            "administrador_clientes.html",
+            clients=clients,
+            request=request
+        )
+
+
+
 
 ctl = UserController()

@@ -21,6 +21,9 @@ class Application:
     
     def products(self):
         return template('app/views/cliente_produto.html')
+    
+    def account(self):
+        return template('app/views/cliente_perfil.html')
 
 
 app_renderer = Application()

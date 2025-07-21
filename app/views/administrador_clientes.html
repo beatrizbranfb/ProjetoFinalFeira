@@ -47,26 +47,28 @@
         <h1 class="page-title">Clientes com Pedidos Pendentes</h1>
       </div>
       
-      <div class="search-filter">
+      <form class="search-filter" method="get" action="/admin_clientes">
         <div class="search-box">
           <i class="fas fa-search"></i>
-          <input type="text" placeholder="Pesquisar clientes...">
+          <input type="text" name="q" placeholder="Pesquisar clientes..." value="{{request.query.q or ''}}">
         </div>
         <div class="filter-options">
-          <select class="filter-select">
-            <option>Todos os status</option>
-            <option>Pendente</option>
-            <option>Atrasado</option>
-            <option>Processando</option>
+          <select class="filter-select" name="status">
+            <option value="">Todos os status</option>
+            <option value="pending" % if request.query.status == 'pending' else %>Pendente</option>
+            <option value="delayed" % if request.query.status == 'delayed' else %>Atrasado</option>
+            <option value="processing" % if request.query.status == 'processing' else %>Processando</option>
           </select>
-          <select class="filter-select">
-            <option>Ordenar por</option>
-            <option>Data do pedido</option>
-            <option>Nome do cliente</option>
-            <option>Valor do pedido</option>
+          <select class="filter-select" name="sort">
+            <option value="">Ordenar por</option>
+            <option value="date" % if request.query.sort == 'date' else %>Data do pedido</option>
+            <option value="name" % if request.query.sort == 'name' else %>Nome do cliente</option>
+            <option value="value" % if request.query.sort == 'value' else %>Valor do pedido</option>
           </select>
+          <button type="submit">Filtrar</button>
         </div>
-      </div>    
+      </form>
+   
       <div class="table-container">
         <table>
           <thead>
@@ -84,30 +86,30 @@
           % for client in clients:
           <tr>
             <td>
-              <strong>{{client["username"]}}</strong><br>
-              <small>{{client["email"]}}</small><br>
-              <small>{{client["phone"]}}</small><br>
-              <small>{{client["address"]}}</small>
+              <strong>{{client.username}}</strong><br>
+              <small>{{client.email}}</small><br>
+              <small>{{client.phone}}</small><br>
+              <small>{{client.address}}</small>
             </td>
-            <td>#{{client["order_id"]}}</td>
-            <td>{{client["order_date"]}}</td>
-            <td>R$ {{'%.2f' % client["order_value"]}}</td>
+            <td>#{{client.order_id}}</td>
+            <td>{{client.order_date}}</td>
+            <td>R$ {{'%.2f' % client.order_value}}</td>
             <td>
-              % if client["status"] == 'pending':
+              % if client.status == 'pending':
                 <span class="status-pending">Pendente</span>
-              % elif client["status"] == 'processing':
+              % elif client.status == 'processing':
                 <span class="status-processing">Processando</span>
-              % elif client["status"] == 'completed':
+              % elif clientstatus == 'completed':
                 <span class="status-delivered">Entregue</span>
-              % elif client["status"] == 'canceled':
+              % elif client.status == 'canceled':
                 <span class="status-canceled">Cancelado</span>
               % else:
-                <span class="status-delayed">{{client["status"].capitalize()}}</span>
+                <span class="status-delayed">{{client.status.capitalize()}}</span>
               % end
             </td>
-            <td>{{client["days_pending"]}} dias</td>
+            <td>{{client.days_pending}} dias</td>
             <td>
-              <form action="/admin/confirmar_pedido/{{client['order_id']}}" method="post" style="display: inline;">
+              <form action="/admin/confirmar_pedido/{{client.order_id}}" method="post" style="display: inline;">
                 <button class="action-btn" title="Marcar como entregue" onclick="return confirm('Confirmar entrega do pedido?')">
                   <i class="fas fa-check-circle"></i>
                 </button>

@@ -1,26 +1,2 @@
 [
-    {
-        "id": 1,
-        "user_id": 1,
-        "order_date": "2025-07-15T11:11:25.106828",
-        "total_amount": 0.0,
-        "status": "completed",
-        "items": []
-    },
-    {
-        "id": 2,
-        "user_id": 1,
-        "order_date": "2025-07-19T17:50:16.554740",
-        "total_amount": 0.0,
-        "status": "completed",
-        "items": []
-    },
-    {
-        "id": 3,
-        "user_id": 1,
-        "order_date": "2025-07-19T18:40:15.024573",
-        "total_amount": 0.0,
-        "status": "pending",
-        "items": []
-    }
 ]
