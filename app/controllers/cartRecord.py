@@ -4,7 +4,6 @@ from datetime import datetime
 from app.controllers.productRecord import ProductRecord
 
 class CartRecord:
-
     def __init__(self, cart_item_record=None, app_renderer=None):
         self.__all_orders = []
         self.cart_item_record = CartItemRecord() if cart_item_record is None else cart_item_record
@@ -88,26 +87,25 @@ class CartRecord:
         return None
 
     def get_user_orders(self, user_id):
-        user_orders = []
-        product_record = ProductRecord()
+            user_orders = []
+            product_record = ProductRecord()
 
-        for order in self.__all_orders:
-            if order.user_id == user_id and order.status == 'completed':
-
-                augmented_items = []
-                for item_obj in order.items:
-                    product = product_record.get_product_by_id(item_obj.product_id)
-                    if product:
-                        augmented_items.append({
-                            "product_id": item_obj.product_id,
-                            "name": product.name,
-                            "price": product.price,
-                            "quantity": item_obj.quantity
-                        })
-                order.total_amount = self.get_tot_amount(order.id)
-                order.items = augmented_items
-                user_orders.append(order)
-        return user_orders
+            for order in self.__all_orders:
+                    augmented_items = []
+                    for item_obj in order.items:
+                        product = product_record.get_product_by_id(item_obj.product_id)
+                        if product:
+                            augmented_items.append({
+                                "product_id": item_obj.product_id,
+                                "name": product.name,
+                                "price": product.price,
+                                "quantity": item_obj.quantity,
+                                "total_price": item_obj.quantity * product.price
+                            })
+                    order.total_amount = self.get_tot_amount(order.id)
+                    order.items = augmented_items
+                    user_orders.append(order)
+            return user_orders
     
     def get_order_by_id(self, order_id):
         for order in self.__all_orders:
@@ -132,11 +130,16 @@ class CartRecord:
         return None
 
     def get_user_cart(self, user_id):
+        print(f"\n--- DEBUG: Chamando get_user_cart para user_id: {user_id} ---")
         cart = self.get_active_cart_by_user_id(user_id)
         if not cart:
+            print("  Nenhum carrinho ativo (pending) encontrado.")
             return None
 
+        print(f"  Carrinho ativo encontrado (ID: {cart.id}, Status: {cart.status}).")
+
         items = self.cart_item_record.get_items_by_order_id(cart.id)
+        print(f"  Itens brutos recuperados para order_id {cart.id}: {[item.__dict__ for item in items]}")
 
         enriched_items = []
         subtotal = 0.0
@@ -144,7 +147,7 @@ class CartRecord:
         product_record = ProductRecord()
 
         for item in items:
-            product = ProductRecord().get_product_by_id(item.product_id)
+            product = product_record.get_product_by_id(item.product_id)
             if product:
                 enriched_item = {
                     'product_id': item.product_id,
@@ -156,18 +159,27 @@ class CartRecord:
                 }
                 subtotal += enriched_item['total_price']
                 enriched_items.append(enriched_item)
+                print(f"    Item enriquecido adicionado: {enriched_item}")
+            else:
+                print(f"    AVISO: Produto com ID {item.product_id} não encontrado no ProductRecord.")
 
-        delivery_fee = 5.00 
+
+        delivery_fee = 5.00
         total = subtotal + delivery_fee
 
-        return {
+        cart_data = {
             'id': cart.id,
             'items': enriched_items,
             'subtotal': subtotal,
             'delivery_fee': delivery_fee,
             'total': total
         }
-
+        print(f"  Dados finais do carrinho para renderização: {cart_data}")
+        print(f"--- FIM DEBUG ---\n")
+        return cart_data
+    
+    def get_all_orders(self):
+        return self.read() or []
 
 
 
@@ -176,6 +188,23 @@ class CartItemRecord:
     def __init__(self):
         self.__all_items = []
         self.read()
+
+    def add_item(self, order_id, product_id, quantity):
+        print(f"\n--- DEBUG: Adicionando/Atualizando item ---")
+        print(f"  Order ID: {order_id}, Product ID: {product_id}, Quantity: {quantity}")
+
+        existing_item = self.get_cart_item(order_id, product_id)
+        if existing_item:
+            print(f"  Item existente encontrado. Quantidade antes: {existing_item.quantity}")
+            existing_item.quantity += quantity
+            print(f"  Quantidade depois: {existing_item.quantity}")
+        else:
+            new_item = OrderItem(order_id, product_id, quantity)
+            self.__all_items.append(new_item)
+            print(f"  Novo item adicionado: {new_item.__dict__}")
+        self.__write()
+        print(f"  Estado atual de __all_items após add_item: {[item.__dict__ for item in self.__all_items]}")
+        print(f"--- FIM DEBUG ---\n")
 
     def read(self):
         try:

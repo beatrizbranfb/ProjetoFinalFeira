@@ -52,9 +52,25 @@ class ProductController:
     @route('/products')
     @login_required
     def list_products(self):
-        products = self.__products.get_all_products()
-        user_role = self.__user_controller.get_user_role()
-        return app_renderer.render_page('cliente_produto.html', products=products, user_role=user_role)
+        from bottle import request
+
+        produtos = ProductRecord().get_all_products()
+        search_query = request.query.get('q', '').lower().strip()
+        sort_option = request.query.get('sort', '')
+
+        if search_query:
+            produtos = [p for p in produtos if search_query in p.name.lower()]
+
+        if sort_option == 'name-asc':
+            produtos.sort(key=lambda p: p.name.lower())
+        elif sort_option == 'name-desc':
+            produtos.sort(key=lambda p: p.name.lower(), reverse=True)
+        elif sort_option == 'price-asc':
+            produtos.sort(key=lambda p: p.price)
+        elif sort_option == 'price-desc':
+            produtos.sort(key=lambda p: p.price, reverse=True)
+
+        return app_renderer.render_page('cliente_produto.html', products=produtos, request=request)
 
     @route('/products/<product_id:int>')
     @login_required
@@ -105,7 +121,7 @@ class ProductController:
                 return app_renderer.render_page('error_400', message="Preço e quantidade devem ser números.")
             
             product = self.__products.update_product(
-                product_id=product.id,
+            product_id=product.id,
             description=product.description,
             price=product.price,
             stock=product.stock
@@ -138,3 +154,5 @@ class ProductController:
             new_stock = max(product.stock - quantity, 0)
             self.__products.update_product(product_id=product.id, name=product.name, description=product.description, price=product.price, stock=new_stock)
         return redirect('/stock')
+    
+    

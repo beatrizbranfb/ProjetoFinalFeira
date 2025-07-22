@@ -17,7 +17,6 @@
       <a href="/cart" class="nav-link">
         <i class="fas fa-shopping-cart"></i>
         <span>Carrinho</span>
-        <span class="cart-count">0</span>
       </a>
       <a href="/orders" class="nav-link active">
         <i class="fas fa-user"></i>
@@ -50,42 +49,33 @@
     </aside>
     
     <div class="content">
-      <div class="tab-content active">
-        <div class="page-header">
-          <h1 class="page-title">Minha Conta</h1>
+      <form class="account-form" method="POST" action="/account/update">
+        <div class="form-group">
+          <label for="name">Nome Completo</label>
+          <input type="text" id="name" name="name" value="Beatriz Brandão" class="form-input">
         </div>
-        
-        <div class="account-container">
-          <div class="account-tabs">
-            <div class="account-tab active" data-tab="info">Informações Pessoais</div>
-          </div>
-          <div class="account-content active" id="info-content">
-            <form class="account-form">
-              <div class="form-group">
-                <label for="name">Nome Completo</label>
-                <input type="text" id="name" value="Beatriz Brandão" class="form-input">
-              </div>
-              
-              <div class="form-group">
-                <label for="email">E-mail</label>
-                <input type="email" id="email" value="beatrizbrandao@gmail.com" class="form-input">
-              </div>
-              
-              <div class="form-group">
-                <label for="phone">Telefone</label>
-                <input type="tel" id="phone" value="(61) 98765-4321" class="form-input">
-              </div>
 
-              <div class="form-group">
-                <label for="phone">Endereço</label>
-                <input type="text" id="address" value="Rua fulano de tal, 123" class="form-input">
-              </div>
-              
-              <div class="form-actions">
-                <button type="button" class="btn btn-outline">Cancelar</button>
-                <button type="submit" class="btn btn-primary">Salvar Alterações</button>
-              </div>
-            </form>
+        <div class="form-group">
+          <label for="email">E-mail</label>
+          <input type="email" id="email" name="email" value="beatrizbrandao@gmail.com" class="form-input">
+        </div>
+
+        <div class="form-group">
+          <label for="phone">Telefone</label>
+          <input type="tel" id="phone" name="phone" value="(61) 98765-4321" class="form-input">
+        </div>
+
+        <div class="form-group">
+          <label for="address">Endereço</label>
+          <input type="text" id="address" name="address" value="Rua fulano de tal, 123" class="form-input">
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="btn btn-outline">Cancelar</button>
+          <button type="submit" class="btn btn-primary">Salvar Alterações</button>
+        </div>
+      </form>
+
           </div>
           <div class="account-content" id="address-content">
             <div class="address-list">
@@ -145,14 +135,6 @@
                     <label for="city">Cidade</label>
                     <input type="text" id="city" class="form-input">
                   </div>
-                </div>
-                
-                <div class="form-group">
-                  <label for="state">Estado</label>
-                  <select id="state" class="form-input">
-                    <option value="">Selecione</option>
-                    <option value="SP" selected>São Paulo</option>
-                  </select>
                 </div>
                 
                 <div class="form-group">

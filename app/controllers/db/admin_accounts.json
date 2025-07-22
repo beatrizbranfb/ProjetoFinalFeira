@@ -2,8 +2,8 @@
     {
         "id": 1, 
         "username": "Administradores", 
-        "password": "Admins", 
-        "email": "administradoresfeira@gmail.com", 
+        "password": "123456", 
+        "email": "administradores@gmail.com", 
         "permissions": ["user", "admin"]
     }
 ]

@@ -18,7 +18,6 @@
       <a href="/cart" class="nav-link">
         <i class="fas fa-shopping-cart"></i>
         <span>Carrinho</span>
-        <span class="cart-count">0</span>
       </a>
       <a href="/profile" class="nav-link">
         <i class="fas fa-user"></i>
@@ -55,8 +54,7 @@
         <div class="page-header">
           <h1 class="page-title">Meu Carrinho</h1>
         </div>
-        
-        <div class="cart-container">
+        <div class="cart">
           <div class="cart-items">
             % if cart['items']:
               % for item in cart['items']:
@@ -84,7 +82,6 @@
               <p>Seu carrinho está vazio.</p>
             % end
           </div>
-          
           <div class="cart-summary">
             <div class="summary-row">
               <span>Subtotal</span>

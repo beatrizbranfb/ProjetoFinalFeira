@@ -31,6 +31,9 @@ class Application:
 
     def products(self):
         return template('app/views/cliente_produto.html')
+    
+    def account(self):
+        return template('app/views/cliente_perfil.html')
 
     def setup_websocket_events(self):
         @self.sio.event
