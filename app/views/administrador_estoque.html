@@ -7,6 +7,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <link rel="stylesheet" type="text/css" href="../static/css/adm_style.css">
   <script src="../static/js/stock.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.0/socket.io.min.js"></script>
 </head>
 <body> 
   <header>
@@ -184,5 +185,44 @@
       </form>
     </div>
   </div>
+  <script>
+    const socket = io('http://localhost:8080');
+
+    socket.on('connect', () => {
+        console.log('Connected to WebSocket server!');
+    });
+
+    socket.on('product_update', (data) => {
+        console.log('Product update received:', data);
+        updateProductDisplay(data.products);
+    });
+    socket.on('disconnect', () => {
+        console.log('Disconnected from WebSocket server.');
+    });
+
+    function updateProductDisplay(products) {
+      const productsGrid = document.querySelector('.products-grid');
+      if (productsGrid) {
+        productsGrid.innerHTML = '';
+        products.forEach(product => {
+          const productCard = document.createElement('div');
+          productCard.className = 'product-card';
+          productCard.innerHTML = `
+            <img src="${product.image || ''}" alt="${product.name}" class="product-image">
+            <h3 class="product-name">${product.name}</h3>
+            <p class="product-category">${product.description}</p>
+            <p class="product-price">R$ ${product.price.toFixed(2)} /kg</p>
+            <form action="/cart/add/${product.id}" method="post">
+                <input type="number" name="quantity" min="1" value="1" class="quantity-input">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-cart-plus"></i> Adicionar
+                </button>
+            </form>
+          `;
+          productsGrid.appendChild(productCard);
+        });
+      }
+    }
+  </script>
 </body>
 </html>

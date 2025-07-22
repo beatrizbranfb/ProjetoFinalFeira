@@ -6,9 +6,9 @@ from app.controllers.application import app_renderer
 
 
 class CartController:
-    def __init__(self):
+    def __init__(self, app):
         self.__cart_item_record = CartItemRecord()
-        self.__cart_record = CartRecord(cart_item_record=self.__cart_item_record)
+        self.__cart_record = CartRecord(cart_item_record=self.__cart_item_record, app_renderer=app)
         self.pages = {
             'view_cart': self.view_cart,
             'view_orders': self.view_orders,

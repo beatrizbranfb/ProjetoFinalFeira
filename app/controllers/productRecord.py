@@ -4,8 +4,9 @@ import json
 
 class ProductRecord():
 
-    def __init__(self):
+    def __init__(self, app_renderer=None):
         self.__all_products = []
+        self.app_renderer = app_renderer
         self.read()
 
     def read(self):
@@ -27,6 +28,10 @@ class ProductRecord():
                 product_data = [vars(product) for product in self.__all_products]
                 json.dump(product_data, fjson)
                 print('Arquivo gravado com sucesso (Produto)!')
+                if self.app_renderer:
+                    self.app_renderer.emit_product_update(
+                        {'products': [vars(p) for p in self.__all_products]} # Faz o método __write() emitir um evento websocket
+                    )
         except FileNotFoundError:
             print('O sistema não conseguiu gravar o arquivo (Produto)!')
 

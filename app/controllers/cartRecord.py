@@ -4,9 +4,10 @@ from datetime import datetime
 from app.controllers.productRecord import ProductRecord
 
 class CartRecord:
-    def __init__(self, cart_item_record=None):
+    def __init__(self, cart_item_record=None, app_renderer=None):
         self.__all_orders = []
-        self.cart_item_record = cart_item_record if cart_item_record else CartItemRecord()
+        self.cart_item_record = CartItemRecord() if cart_item_record is None else cart_item_record
+        self.app_renderer = app_renderer
         self.read()
 
     def read(self):
@@ -30,6 +31,30 @@ class CartRecord:
                     order_dict['order_date'] = order_dict['order_date'].isoformat()
                 json.dump(orders_list, fjson, indent=4)
                 print('Arquivo gravado (carrinho)!')
+                if self.app_renderer:
+                    all_orders_data = []
+                    p_record = ProductRecord()
+
+                    for order in self.__all_orders:
+                        augmented_items = []
+                        for item_obj in order.items:
+                            product = p_record.get_product_by_id(item_obj.product_id)
+                            if product:
+                                augmented_items.append({
+                                    "product_id": item_obj.product_id,
+                                    "name": product.name,
+                                    "price": product.price,
+                                    "quantity": item_obj.quantity,
+                                    "tot_price": product.price * item_obj.quantity,
+                                    "image": getattr(product, 'image', '')
+                                })
+                        order_dict_copy = order.__dict__.copy()
+                        order_dict_copy['order_date'] = order_dict_copy['order_date'].isoformat()
+                        order_dict_copy['items'] = augmented_items
+                        all_orders_data.append(order_dict_copy)
+                    self.app_renderer.emit_order_update(
+                        {'orders': all_orders_data}  # Emite o evento com os dados atualizados dos pedidos
+                    )
         except FileNotFoundError:
             print('Não conseguiu gravar (carrinho)!')
 
