@@ -1,4 +1,4 @@
-from app.controllers.user_controller import UserController, login_required, admin_required
+from app.controllers.user_controller import login_required, admin_required
 from app.controllers.productRecord import ProductRecord
 from bottle import request, redirect, route
 from app.controllers.application import app_renderer
@@ -7,7 +7,6 @@ class ProductController:
 
     def __init__(self, app):
         self.__products = ProductRecord(app_renderer=app)
-        self.__user_controller = UserController()
         self.pages = {
             'list_products': self.list_products,
             'product_details': self.product_details,

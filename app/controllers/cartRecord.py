@@ -130,16 +130,11 @@ class CartRecord:
         return None
 
     def get_user_cart(self, user_id):
-        print(f"\n--- DEBUG: Chamando get_user_cart para user_id: {user_id} ---")
         cart = self.get_active_cart_by_user_id(user_id)
         if not cart:
-            print("  Nenhum carrinho ativo (pending) encontrado.")
             return None
 
-        print(f"  Carrinho ativo encontrado (ID: {cart.id}, Status: {cart.status}).")
-
         items = self.cart_item_record.get_items_by_order_id(cart.id)
-        print(f"  Itens brutos recuperados para order_id {cart.id}: {[item.__dict__ for item in items]}")
 
         enriched_items = []
         subtotal = 0.0
@@ -159,10 +154,6 @@ class CartRecord:
                 }
                 subtotal += enriched_item['total_price']
                 enriched_items.append(enriched_item)
-                print(f"    Item enriquecido adicionado: {enriched_item}")
-            else:
-                print(f"    AVISO: Produto com ID {item.product_id} não encontrado no ProductRecord.")
-
 
         delivery_fee = 5.00
         total = subtotal + delivery_fee
@@ -174,8 +165,6 @@ class CartRecord:
             'delivery_fee': delivery_fee,
             'total': total
         }
-        print(f"  Dados finais do carrinho para renderização: {cart_data}")
-        print(f"--- FIM DEBUG ---\n")
         return cart_data
     
     def get_all_orders(self):
@@ -190,21 +179,14 @@ class CartItemRecord:
         self.read()
 
     def add_item(self, order_id, product_id, quantity):
-        print(f"\n--- DEBUG: Adicionando/Atualizando item ---")
-        print(f"  Order ID: {order_id}, Product ID: {product_id}, Quantity: {quantity}")
 
         existing_item = self.get_cart_item(order_id, product_id)
         if existing_item:
-            print(f"  Item existente encontrado. Quantidade antes: {existing_item.quantity}")
             existing_item.quantity += quantity
-            print(f"  Quantidade depois: {existing_item.quantity}")
         else:
             new_item = OrderItem(order_id, product_id, quantity)
             self.__all_items.append(new_item)
-            print(f"  Novo item adicionado: {new_item.__dict__}")
         self.__write()
-        print(f"  Estado atual de __all_items após add_item: {[item.__dict__ for item in self.__all_items]}")
-        print(f"--- FIM DEBUG ---\n")
 
     def read(self):
         try:
