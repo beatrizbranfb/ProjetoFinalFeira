@@ -36,9 +36,8 @@ class ProductRecord():
             print('O sistema não conseguiu gravar o arquivo (Produto)!')
 
     def add_product(self, name, price, stock, description):
-        new_product = Product(id=len(self.__all_products) + 1, name=name, price=price, stock=stock, description=description)
-        if not hasattr(new_product, 'image'):
-            new_product.image = '/static/images/default_product.png'
+        image = '/static/images/default_product.png'
+        new_product = Product(id=len(self.__all_products) + 1, name=name, price=price, stock=stock, description=description, image=image)
         self.__all_products.append(new_product)
         self.__write()
         return new_product

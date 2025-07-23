@@ -3,14 +3,54 @@
         "id": 1,
         "user_id": 1,
         "order_date": "2025-07-15T11:11:25.106828",
-        "total_amount": 0.0,
-        "status": "pending",
+        "total_amount": 0,
+        "status": "completed",
         "items": []
     },
     {
         "id": 2,
         "user_id": 4,
         "order_date": "2025-07-19T17:10:28.200630",
+        "total_amount": 0,
+        "status": "pending",
+        "items": []
+    },
+    {
+        "id": 3,
+        "user_id": 2,
+        "order_date": "2025-07-22T16:13:39.500331",
+        "total_amount": 0,
+        "status": "completed",
+        "items": []
+    },
+    {
+        "id": 4,
+        "user_id": 2,
+        "order_date": "2025-07-22T16:14:27.408844",
+        "total_amount": 0,
+        "status": "pending",
+        "items": []
+    },
+    {
+        "id": 5,
+        "user_id": 3,
+        "order_date": "2025-07-22T17:27:35.035230",
+        "total_amount": 0,
+        "status": "completed",
+        "items": []
+    },
+    {
+        "id": 6,
+        "user_id": 3,
+        "order_date": "2025-07-22T17:27:52.232887",
+        "total_amount": 0,
+        "status": "pending",
+        "items": []
+    },
+    {
+        "id": 7,
+        "user_id": 1,
+        "order_date": "2025-07-22T17:36:45.071330",
         "total_amount": 0.0,
         "status": "pending",
         "items": []

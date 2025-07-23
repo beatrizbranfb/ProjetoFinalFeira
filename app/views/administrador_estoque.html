@@ -133,7 +133,7 @@
                     <i class="fas fa-minus-circle"></i>
                   </button>
                 </form>
-                <a href="/products/edit/{{product.id}}" class="action-btn" title="Editar">
+                <a href="/products/edit/{{product.id}}" id='editProductModal' class="action-btn" title="Editar">
                   <i class="fas fa-edit"></i>
                 </a>
               </td>
@@ -185,6 +185,48 @@
       </form>
     </div>
   </div>
+
+  <div class="modal" id="editProductModal" style="display: none;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title">Editar Produto</h3>
+        <button class="close-modal">&times;</button>
+      </div>
+      <form id="editProductForm" action="/products/edit" method="post" enctype="multipart/form-data">
+        <div class="form-group">
+          <label for="productName">{{product.name}}</label>
+          <input type="text" id="productName" name="name" class="form-control" required>
+        </div>
+        <div class="form-group">
+          <label for="productCategory">{{product.description}}</label>
+          <select id="productCategory" name="category" class="form-control" required>
+            <option value="">Selecione uma categoria</option>
+            <option value="Frutas tropicais">Frutas tropicais</option>
+            <option value="Frutas cítricas">Frutas cítricas</option>
+            <option value="Frutas vermelhas">Frutas vermelhas</option>
+            <option value="Outras">Outras</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="productQuantity">{{product.stock}} (kg)</label>
+          <input type="number" id="productQuantity" name="stock" class="form-control" min="0" step="0.1" required>
+        </div>
+        <div class="form-group">
+          <label for="productPrice">{{product.price}} (R$)</label>
+          <input type="number" id="productPrice" name="price" class="form-control" min="0" step="0.01" required>
+        </div>
+        <div class="form-group">
+          <label for="productImage">Imagem da Fruta</label>
+          <input type="file" id="productImage" name="image" class="form-control" accept="image/*">
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-danger close-modal">Cancelar</button>
+          <button type="submit" class="btn btn-success">Salvar Alterações</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <script>
     const socket = io('http://localhost:8080');
 

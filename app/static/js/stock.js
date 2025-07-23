@@ -21,6 +21,25 @@ document.addEventListener('DOMContentLoaded', function() {
         addProductBtn.addEventListener('click', openModal);
     }
 
+    const editProductBtn = document.getElementById('editProductBtn');
+    const editProductModal = document.getElementById('editProductModal');
+
+    function openModal() {
+        if (editProductModal) {
+            editProductModal.style.display = 'block';
+        }
+    }
+
+    function closeModal() {
+        if (editProductModal) {
+            editProductModal.style.display = 'none';
+        }
+    }
+
+    if (editProductBtn) {
+        editProductBtn.addEventListener('click', openModal);
+    }
+
     closeButtons.forEach(button => {
         button.addEventListener('click', closeModal);
     });

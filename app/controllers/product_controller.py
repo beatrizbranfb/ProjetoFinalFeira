@@ -86,6 +86,7 @@ class ProductController:
         price = request.forms.get('price')
         stock = request.forms.get('stock')
         category = request.forms.get('category')
+        image = request.forms.get('image')
 
         if not name or not price or not stock or not category:
             return app_renderer.render_page('error_400', message="Todos os campos são obrigatórios.")
@@ -103,7 +104,7 @@ class ProductController:
         except Exception as e:
             return app_renderer.render_page('error_500', message=f"Erro ao adicionar produto: {str(e)}")
         return redirect('/stock')
-        
+
     @route('/products/edit/<product_id:int>', method=['GET', 'POST'])
     def edit_product(self, product_id):
         product = self.__products.get_product_by_id(product_id)
@@ -126,7 +127,7 @@ class ProductController:
             stock=product.stock
             )
             return redirect('/stock')
-        return app_renderer.render_page('produtos/adicionar_editar', product=product, error=None)
+        return redirect('/stock')
 
     @route('/products/delete/<product_id:int>', method=['POST'])
     @admin_required
